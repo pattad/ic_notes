@@ -1,0 +1,48 @@
+<div class='wrapper'>
+    <header id="header">
+        <div class="inner">
+
+            <!-- Logo -->
+            <a href="index.html" class="logo">
+                <span class="symbol"><img src="../assets/logo.svg" alt="" /></span><span class="title">IC Notes</span>
+            </a>
+
+            <!-- Nav -->
+            <nav>
+                <ul>
+                    <li><a href="#menu">Menu</a></li>
+                </ul>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- Menu -->
+    <nav id="menu">
+        <div class="inner">
+
+            <h2>IC Notes</h2>
+            <ul>
+                <li><a routerLink="/home" routerLinkActive="active">Home</a></li>
+                <li *ngIf="!isAuthenticated()"><a (click)="login()">Login</a></li>
+                <li *ngIf="isAuthenticated()"><a (click)="logout()">Logout</a></li>
+                <li><a routerLink="/about" routerLinkActive="active">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <div id="main" class="main">
+        <router-outlet></router-outlet>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <ul class="copyright">
+                <li>&copy; IC Notes. All rights reserved</li>
+            </ul>
+        </div>
+    </footer>
+
+</div>

@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "notes": {
+      "main": "src/notes/main.mo",
+      "type": "motoko"
+    },
+    "www": {
+      "dependencies": [
+        "notes"
+      ],
+      "frontend": {
+        "entrypoint": "dist/www/index.html"
+      },
+      "source": [
+        "dist/www"
+      ],
+      "type": "assets"
+    }
+  },
+
+  "dfx": "0.8.1",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}

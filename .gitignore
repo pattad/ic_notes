@@ -1,0 +1,5 @@
+# Project exclude paths
+/dist/
+/node_modules/
+/.dfx
+/.idea

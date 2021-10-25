@@ -1,0 +1,22 @@
+type anon_class_12_1 = 
+ service {
+   addNote: (text, text) -> ();
+   deleteNote: (int) -> ();
+   getNotes: () -> (vec Note);
+   greet: (text) -> (text);
+   test: () -> (text) query;
+   updateNote: (int, text, text) -> ();
+   whoami: () -> (text);
+ };
+type Note = 
+ record {
+   content: text;
+   createdAt: int;
+   id: int;
+   isPrivate: bool;
+   notebookId: int;
+   tags: vec text;
+   title: text;
+   updatedAt: int;
+ };
+service : () -> anon_class_12_1
