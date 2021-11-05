@@ -2,7 +2,7 @@ type anon_class_12_1 =
  service {
    addNote: (text, text) -> ();
    deleteNote: (int) -> ();
-   getNotes: () -> (vec Note);
+   getNotes: () -> (vec Note) query;
    greet: (text) -> (text);
    test: () -> (text) query;
    updateNote: (int, text, text) -> ();

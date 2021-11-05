@@ -1,8 +1,9 @@
-import {Injectable} from '@angular/core';
-import {_SERVICE, Note} from "../declarations/notes/notes.did";
-import {Actor, HttpAgent} from "@dfinity/agent";
-import {AuthClientWrapper} from "./authClient";
-import {idlFactory} from '../declarations/notes';
+import { Injectable } from '@angular/core';
+import { _SERVICE, Note } from "../declarations/notes/notes.did";
+import { Actor, HttpAgent } from "@dfinity/agent";
+import { AuthClientWrapper } from "./authClient";
+import { idlFactory } from '../declarations/notes';
+import { isLocalhost } from "./config";
 
 const ic_notes = require('src/declarations/notes').notes;
 
@@ -47,13 +48,17 @@ export class IcNotesService {
     }
 
     private async getActor() {
-        const identity = await this.authClientWrapper.getIdentity()
-        const agent = new HttpAgent({identity});
-        console.log('canisterId:' + process.env.NOTES_CANISTER_ID);
-        let notes_actor = Actor.createActor<_SERVICE>(idlFactory, {
-            agent,
-            canisterId: process.env.NOTES_CANISTER_ID as string,
-        });
-        return notes_actor;
+        if (isLocalhost) {
+            return ic_notes;
+        } else {
+            const identity = await this.authClientWrapper.getIdentity()
+            const agent = new HttpAgent({identity});
+            console.log('canisterId:' + process.env.NOTES_CANISTER_ID);
+            let notes_actor = Actor.createActor<_SERVICE>(idlFactory, {
+                agent,
+                canisterId: process.env.NOTES_CANISTER_ID as string,
+            });
+            return notes_actor;
+        }
     }
 }

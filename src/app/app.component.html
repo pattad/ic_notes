@@ -4,7 +4,7 @@
 
             <!-- Logo -->
             <a href="index.html" class="logo">
-                <span class="symbol"><img src="../assets/logo.svg" alt="" /></span><span class="title">IC Notes</span>
+                <span class="symbol"><img src="../assets/logo.svg" alt=""/></span><span class="title">IC Notes</span>
             </a>
 
             <!-- Nav -->
@@ -24,8 +24,8 @@
             <h2>IC Notes</h2>
             <ul>
                 <li><a routerLink="/home" routerLinkActive="active">Home</a></li>
-                <li *ngIf="!isAuthenticated()"><a (click)="login()">Login</a></li>
-                <li *ngIf="isAuthenticated()"><a (click)="logout()">Logout</a></li>
+                <li *ngIf="!isLoggedIn()"><a (click)="login()">Login</a></li>
+                <li *ngIf="isLoggedIn()"><a (click)="logout()">Logout</a></li>
                 <li><a routerLink="/about" routerLinkActive="active">About</a></li>
             </ul>
         </div>

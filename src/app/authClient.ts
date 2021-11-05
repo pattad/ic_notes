@@ -1,10 +1,12 @@
-import { Identity} from '@dfinity/agent';
+import { Identity } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import { getIdentityUrl } from './config';
 
 export class AuthClientWrapper {
     public authClient?: AuthClient;
     public ready = false;
+    public isLoggedIn = false;
+
     constructor() {
         return this;
     }
@@ -24,6 +26,7 @@ export class AuthClientWrapper {
             await this.authClient?.login({
                 identityProvider,
                 onSuccess: async () => {
+                    this.isLoggedIn = true;
                     console.log('[AuthClientWrapper] login success to', identityProvider);
                     resolve(this.authClient?.getIdentity());
                 },
@@ -33,7 +36,8 @@ export class AuthClientWrapper {
 
     async logout() {
         console.log('[AuthClientWrapper] logout');
-        return this.authClient?.logout({ returnTo: '/' });
+        this.isLoggedIn = false;
+        return this.authClient?.logout({returnTo: '/'});
     }
 
     async getIdentity() {

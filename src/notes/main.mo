@@ -55,7 +55,7 @@ shared({ caller = initializer }) actor class() {
         };
     };
 
-    public shared({ caller }) func getNotes() : async [Note] {
+    public query({ caller }) func getNotes() : async [Note] {
         let principalName = Principal.toText(caller);
         var notesOfUser = notesByUser.get(principalName);
 

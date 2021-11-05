@@ -1,4 +1,4 @@
-<div *ngIf="isAuthenticated()" class="inner">
+<div *ngIf="isLoggedIn()" class="inner">
     <p>Your private notes on the blockchain. </p>
 
     Title
@@ -15,12 +15,13 @@
     <div class="card" *ngFor="let note of notes">
         <div class="container">
             <b>{{note.title}}</b>
-            <p>{{note.content}}</p>
-            <div align="right"><a (click)="editNote(note.id)">edit</a> - <a (click)="deleteNote(note.id)">delete</a></div>
+            <p style="white-space: pre-wrap; overflow-wrap: break-word">{{note.content}}</p>
+            <div align="right"><a (click)="editNote(note.id)">edit</a> - <a (click)="deleteNote(note.id)">delete</a>
+            </div>
         </div>
     </div>
 </div>
-<div *ngIf="!isAuthenticated()" class="inner">
+<div *ngIf="!isLoggedIn()" class="inner">
     <p>Your private notes on the blockchain.</p>
     <p>Please login to start writing notes.</p>
     <button (click)="login()">Login</button>

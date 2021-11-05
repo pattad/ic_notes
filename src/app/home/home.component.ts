@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {IcNotesService} from "../ic-notes.service";
-import {AuthClientWrapper} from "../authClient";
-import {Note} from "../../declarations/notes/notes.did";
+import { Component, OnInit } from '@angular/core';
+import { IcNotesService } from "../ic-notes.service";
+import { AuthClientWrapper } from "../authClient";
+import { Note } from "../../declarations/notes/notes.did";
+import { isLocalhost } from "../config";
 
 @Component({
     selector: 'app-home',
@@ -20,16 +21,12 @@ export class HomeComponent implements OnInit {
     constructor(private icNotesService: IcNotesService,
                 private authClientWrapper: AuthClientWrapper) {
 
-        if (this.isAuthenticated())
+        if (this.isLoggedIn())
             this.getNotes()
     }
 
-    public isAuthenticated() {
-        if (this.authClientWrapper.authClient)
-            // TODO work-around
-            return this.authClientWrapper.authClient?.getIdentity().getPrincipal().toString().length > 50
-        else
-            return false
+    public isLoggedIn() {
+        return this.authClientWrapper.isLoggedIn;
     }
 
     public async getNotes() {
@@ -75,6 +72,7 @@ export class HomeComponent implements OnInit {
     }
 
     public editNote(noteId: bigint) {
+        console.info(noteId)
         this.notes.forEach(note => {
             if (noteId == note.id) {
                 this.content = note.content;
@@ -91,18 +89,25 @@ export class HomeComponent implements OnInit {
         this.icNotesService.deleteNote(noteId).then(res => {
             this.getNotes()
         })
+
+        this.resetFields();
     }
 
     public async login() {
         await this.authClientWrapper.create()
-        this.authClientWrapper.login().then(res => {
-            console.info('identity: ')
-            console.info(res)
-            console.info('principal: ' + res?.getPrincipal().toString())
-            if (res) {
-                this.getNotes()
-            }
-        });
+
+        if (isLocalhost) {
+            this.authClientWrapper.isLoggedIn = true;
+        } else {
+            this.authClientWrapper.login().then(res => {
+                console.info('identity: ')
+                console.info(res)
+                console.info('principal: ' + res?.getPrincipal().toString())
+                if (res) {
+                    this.getNotes()
+                }
+            });
+        }
     }
 
     private resetFields() {

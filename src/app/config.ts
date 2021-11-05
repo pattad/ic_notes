@@ -7,8 +7,6 @@ export const config = {
     IDENTITY_URL: 'https://identity.ic0.app',
 };
 
-console.log('!!!!!!!', config);
-
 export const isLocalhost = window.location.href.startsWith('http://localhost') || window.location.href.includes('127.0.0.1');
 
 export const getHttpAgentOptions = (): HttpAgentOptions => (isLocalhost ? {

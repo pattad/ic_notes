@@ -1,7 +1,7 @@
-import {Component} from "@angular/core";
-import {IcNotesService} from "./ic-notes.service";
-import {AuthClientWrapper} from "./authClient";
-import {Router} from "@angular/router";
+import { Component } from "@angular/core";
+import { IcNotesService } from "./ic-notes.service";
+import { AuthClientWrapper } from "./authClient";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-root',
@@ -16,12 +16,8 @@ export class AppComponent {
         this.router.navigate(['/home'])
     }
 
-    public isAuthenticated() {
-        if (this.authClientWrapper.authClient)
-            // TODO work-around
-            return this.authClientWrapper.authClient?.getIdentity().getPrincipal().toString().length > 50
-        else
-            return false
+    public isLoggedIn() {
+        return this.authClientWrapper.isLoggedIn;
     }
 
     public async login() {
