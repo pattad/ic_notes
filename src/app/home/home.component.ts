@@ -3,6 +3,7 @@ import { IcNotesService } from "../ic-notes.service";
 import { AuthClientWrapper } from "../authClient";
 import { Note } from "../../declarations/notes/notes.did";
 import { isLocalhost } from "../config";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-home',
@@ -16,26 +17,31 @@ export class HomeComponent implements OnInit {
     isNewNote: boolean = true;
     id: bigint = BigInt(0);
 
-    public notes: Note[] = [];
+    notes: Note[] = [];
 
     constructor(private icNotesService: IcNotesService,
-                private authClientWrapper: AuthClientWrapper) {
+                private authClientWrapper: AuthClientWrapper,
+                private router: Router) {
 
-        if (this.isLoggedIn())
+        if (this.isLoggedIn()) {
             this.getNotes()
+        }
     }
 
-    public isLoggedIn() {
+    isLoggedIn() {
         return this.authClientWrapper.isLoggedIn;
     }
 
-    public async getNotes() {
+    async getNotes() {
         this.icNotesService.getNotes().then(value => {
             this.notes = value;
+            if (history.state.note != null) {
+                this.fastUpdate(history.state.note)
+            }
         })
     }
 
-    public addNote() {
+    addNote() {
         let tmpNote: Note[] = [{
             content: this.content,
             createdAt: BigInt(0),
@@ -55,35 +61,25 @@ export class HomeComponent implements OnInit {
         this.resetFields();
     }
 
-    public updateNote() {
+    fastUpdate(updatedNote: Note) {
         this.notes.forEach(note => {
-            if (note.id == this.id) {
-                note.title = this.title
-                note.content = this.content
+            if (note.id == updatedNote.id) {
+                note.title = updatedNote.title
+                note.content = updatedNote.content
                 note.updatedAt = BigInt(new Date().getMilliseconds())
             }
         })
-
-        this.icNotesService.updateNote(this.id, this.title, this.content).then(res => {
-            this.getNotes()
-        })
-
-        this.resetFields();
     }
 
-    public editNote(noteId: bigint) {
+    editNote(noteId: bigint) {
         console.info(noteId)
-        this.notes.forEach(note => {
-            if (noteId == note.id) {
-                this.content = note.content;
-                this.title = note.title;
-                this.isNewNote = false;
-                this.id = note.id;
-            }
-        })
+
+        this.router.navigate(['/edit'],
+            {state: {note: this.notes.filter(note => note.id == noteId)[0]}})
+
     }
 
-    public deleteNote(noteId: bigint) {
+    deleteNote(noteId: bigint) {
         this.notes = this.notes.filter(note => note.id != noteId)
 
         this.icNotesService.deleteNote(noteId).then(res => {
@@ -93,11 +89,12 @@ export class HomeComponent implements OnInit {
         this.resetFields();
     }
 
-    public async login() {
+    async login() {
         await this.authClientWrapper.create()
 
         if (isLocalhost) {
             this.authClientWrapper.isLoggedIn = true;
+            this.getNotes()
         } else {
             this.authClientWrapper.login().then(res => {
                 console.info('identity: ')

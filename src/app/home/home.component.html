@@ -8,14 +8,13 @@
     <textarea id="content" [(ngModel)]="content" style="max-width: 60em"></textarea>
     <br>
     <button *ngIf="isNewNote" (click)="addNote()">add Note</button>
-    <button *ngIf="!isNewNote" (click)="updateNote()">Update Note</button>
 
     <br/>
     <br/>
     <div class="card" *ngFor="let note of notes">
         <div class="container">
             <b>{{note.title}}</b>
-            <p style="white-space: pre-wrap; overflow-wrap: break-word">{{note.content}}</p>
+            <p style="white-space: pre-wrap; overflow-wrap: break-word" [innerHTML]="note.content"></p>
             <div align="right"><a (click)="editNote(note.id)">edit</a> - <a (click)="deleteNote(note.id)">delete</a>
             </div>
         </div>

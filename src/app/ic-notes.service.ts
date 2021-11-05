@@ -15,14 +15,6 @@ export class IcNotesService {
     constructor(private authClientWrapper: AuthClientWrapper) {
     }
 
-    public async greet(name: string) {
-        return await ic_notes.greet(name);
-    }
-
-    public async test() {
-        return await ic_notes.test();
-    }
-
     public async addNote(title: string, content: string) {
         let notes_actor = await this.getActor();
 

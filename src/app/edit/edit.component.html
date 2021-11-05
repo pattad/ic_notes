@@ -1,0 +1,15 @@
+<p><b>{{note.title}}</b></p>
+
+<div class="NgxEditor__Wrapper">
+    <ngx-editor-menu [editor]="editor"
+                     [toolbar]="toolbar"></ngx-editor-menu>
+    <ngx-editor
+            [editor]="editor"
+            [ngModel]="html"
+            [disabled]="false"
+            [placeholder]="'Type here...'"
+    ></ngx-editor>
+</div>
+<br>
+<button *ngIf="true" (click)="updateNote()">Update Note</button>
+

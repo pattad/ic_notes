@@ -119,14 +119,6 @@ shared({ caller = initializer }) actor class() {
         return Principal.toText(caller);
     };
 
-    public func greet(name : Text) : async Text {
-        return "Hello, " # name # "!";
-    };
-
-    public query func test() : async Text {
-        return "test from IC main!";
-    };
-
     system func preupgrade() {
          stable_notesByUser := Iter.toArray(notesByUser.entries());
     };
