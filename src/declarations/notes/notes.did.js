@@ -13,9 +13,9 @@ export const idlFactory = ({ IDL }) => {
     'addNote' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'deleteNote' : IDL.Func([IDL.Int], [], []),
     'getNotes' : IDL.Func([], [IDL.Vec(Note)], ['query']),
-    'greet' : IDL.Func([IDL.Text], [IDL.Text], []),
-    'test' : IDL.Func([], [IDL.Text], ['query']),
+    'notesCnt' : IDL.Func([], [IDL.Nat], []),
     'updateNote' : IDL.Func([IDL.Int, IDL.Text, IDL.Text], [], []),
+    'userCnt' : IDL.Func([], [IDL.Nat], []),
     'whoami' : IDL.Func([], [IDL.Text], []),
   });
   return anon_class_12_1;

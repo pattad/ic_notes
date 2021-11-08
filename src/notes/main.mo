@@ -119,6 +119,14 @@ shared({ caller = initializer }) actor class() {
         return Principal.toText(caller);
     };
 
+    public func notesCnt() : async Nat {
+        return nextNoteId;
+    };
+
+    public func userCnt() : async Nat {
+        return notesByUser.size();
+    };
+
     system func preupgrade() {
          stable_notesByUser := Iter.toArray(notesByUser.entries());
     };

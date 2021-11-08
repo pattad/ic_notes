@@ -13,11 +13,11 @@ export interface anon_class_12_1 {
   'addNote' : (arg_0: string, arg_1: string) => Promise<undefined>,
   'deleteNote' : (arg_0: bigint) => Promise<undefined>,
   'getNotes' : () => Promise<Array<Note>>,
-  'greet' : (arg_0: string) => Promise<string>,
-  'test' : () => Promise<string>,
+  'notesCnt' : () => Promise<bigint>,
   'updateNote' : (arg_0: bigint, arg_1: string, arg_2: string) => Promise<
       undefined
     >,
+  'userCnt' : () => Promise<bigint>,
   'whoami' : () => Promise<string>,
 }
 export interface _SERVICE extends anon_class_12_1 {}

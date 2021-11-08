@@ -15,6 +15,14 @@ export class IcNotesService {
     constructor(private authClientWrapper: AuthClientWrapper) {
     }
 
+    public async notesCnt() {
+        return await ic_notes.notesCnt()
+    }
+
+    public async userCnt() {
+        return await ic_notes.userCnt()
+    }
+
     public async addNote(title: string, content: string) {
         let notes_actor = await this.getActor();
 

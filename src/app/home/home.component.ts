@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit {
     addNote() {
         let tmpNote: Note[] = [{
             content: this.content,
-            createdAt: BigInt(0),
+            createdAt: BigInt(new Date().getTime() * 1000000),
             id: BigInt(0),
             isPrivate: true,
             notebookId: BigInt(0),
@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit {
             if (note.id == updatedNote.id) {
                 note.title = updatedNote.title
                 note.content = updatedNote.content
-                note.updatedAt = BigInt(new Date().getMilliseconds())
+                note.updatedAt = BigInt(new Date().getTime() * 1000000)
             }
         })
     }
@@ -112,6 +112,10 @@ export class HomeComponent implements OnInit {
         this.content = ''
         this.id = BigInt(0)
         this.isNewNote = true
+    }
+
+    number(number: BigInt): number {
+        return parseInt(number.toString())
     }
 
     ngOnInit(): void {

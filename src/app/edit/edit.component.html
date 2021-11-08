@@ -1,7 +1,10 @@
-<p><b>{{note.title}}</b></p>
+<p *ngIf="!editTitle"><b>{{title}}</b><a (click)="editTitle = true"> edit</a></p>
+<p *ngIf="editTitle">
+    <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em"/><a (click)="saveTitle()"> save</a>
+</p>
 
 <div class="NgxEditor__Wrapper">
-    <ngx-editor-menu [editor]="editor"
+    <ngx-editor-menu class="NgxEditor__Menu" [editor]="editor" style="overflow: hidden"
                      [toolbar]="toolbar"></ngx-editor-menu>
     <ngx-editor
             [editor]="editor"
@@ -11,5 +14,8 @@
     ></ngx-editor>
 </div>
 <br>
-<button *ngIf="true" (click)="updateNote()">Update Note</button>
+<p *ngIf="number(note.updatedAt) == 0">Created: {{number(note.createdAt) / 1000000 | date: 'short' }} </p>
+<p *ngIf="number(note.updatedAt) > 0">Created: {{number(note.createdAt) / 1000000 | date: 'short' }}
+    Updated: {{number(note.updatedAt) / 1000000 | date: 'short' }}</p>
 
+<button *ngIf="true" (click)="updateNote()">Update Note</button>

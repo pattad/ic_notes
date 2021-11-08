@@ -12,16 +12,19 @@ import { Router } from "@angular/router";
 export class EditComponent implements OnInit, OnDestroy {
 
     editor: Editor;
+    title: string;
+
+    editTitle: boolean = false;
 
     toolbar: Toolbar = [
         ['bold', 'italic'],
         ['underline', 'strike'],
-        ['code', 'blockquote'],
+        // ['code', 'blockquote'],
         ['ordered_list', 'bullet_list'],
-        [{ heading: ['h1', 'h2', 'h3'] }],
-        ['link', 'image'],
+        [{heading: ['h1', 'h2', 'h3']}],
+        // ['link', 'image'],
         ['text_color', 'background_color'],
-        ['align_left', 'align_center', 'align_right', 'align_justify'],
+        ['align_left', 'align_center', 'align_right'],
     ];
 
     html: string = '';
@@ -30,10 +33,11 @@ export class EditComponent implements OnInit, OnDestroy {
 
     constructor(private icNotesService: IcNotesService,
                 private router: Router) {
-        this.editor  = new Editor()
+        this.editor = new Editor()
         this.note = history.state.note;
         this.html = this.note.content
         this.editor.valueChanges.subscribe(value => this.html = toHTML(value))
+        this.title = this.note.title
     }
 
     ngOnInit(): void {
@@ -50,5 +54,14 @@ export class EditComponent implements OnInit, OnDestroy {
         this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content)
 
         this.router.navigate(['/home'], {state: {note: this.note}})
+    }
+
+    saveTitle() {
+        this.note.title = this.title
+        this.editTitle = false
+    }
+
+    number(number: BigInt): number {
+        return parseInt(number.toString())
     }
 }
