@@ -11,12 +11,16 @@
 
     <br/>
     <br/>
-    <div class="card" *ngFor="let note of notes">
+    <div *ngIf="tags.size > 0">
+        Filter By Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a (click)="removeFilter()"> -- Remove Filter</a>
+        <br><br>
+    </div>
+    <div class="card" *ngFor="let note of filteredNotes">
         <div class="container">
             <b>{{note.title}}</b>
             <p style="white-space: pre-wrap; overflow-wrap: break-word" [innerHTML]="note.content"></p>
             <div *ngIf="number(note.createdAt) > 0"
-                 style="text-align: left; float: left">{{number(note.createdAt) / 1000000 | date: 'shortDate'}}</div>
+                 style="text-align: left; float: left">{{number(note.createdAt) / 1000000 | date: 'shortDate'}} {{tagsToString(note.tags)}}</div>
             <div style="text-align: right;"><a (click)="editNote(note.id)">edit</a> - <a
                     (click)="deleteNote(note.id)">delete</a>
             </div>
@@ -25,7 +29,7 @@
 </div>
 <div *ngIf="!isLoggedIn()" class="inner">
     <p>Your private notes on the blockchain.</p>
-    <p>A save and simple way to store your shopping lists, cooking receipes, jokes, passwords, private keys and much
+    <p>A save and simple way to store your shopping lists, cooking recipes, jokes, passwords, secret passphrases and much
         more....</p>
     <p>Please login to start writing notes.</p>
     <button (click)="login()">Login</button>

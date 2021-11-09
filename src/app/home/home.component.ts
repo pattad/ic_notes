@@ -12,12 +12,18 @@ import { Router } from "@angular/router";
 })
 export class HomeComponent implements OnInit {
 
-    content: string = '';
-    title: string = '';
-    isNewNote: boolean = true;
-    id: bigint = BigInt(0);
+    content: string = ''
+    title: string = ''
+    isNewNote: boolean = true
+    id: bigint = BigInt(0)
 
-    notes: Note[] = [];
+    notes: Note[] = []
+
+    filteredNotes: Note[] = []
+
+    filterByTag: string = ''
+
+    tags = new Set<string>()
 
     constructor(private icNotesService: IcNotesService,
                 private authClientWrapper: AuthClientWrapper,
@@ -34,10 +40,12 @@ export class HomeComponent implements OnInit {
 
     async getNotes() {
         this.icNotesService.getNotes().then(value => {
-            this.notes = value;
+            this.notes = value
             if (history.state.note != null) {
                 this.fastUpdate(history.state.note)
             }
+            this.updateTags()
+            this.setfilterByTag(this.filterByTag)
         })
     }
 
@@ -66,6 +74,7 @@ export class HomeComponent implements OnInit {
             if (note.id == updatedNote.id) {
                 note.title = updatedNote.title
                 note.content = updatedNote.content
+                note.tags = updatedNote.tags
                 note.updatedAt = BigInt(new Date().getTime() * 1000000)
             }
         })
@@ -116,6 +125,31 @@ export class HomeComponent implements OnInit {
 
     number(number: BigInt): number {
         return parseInt(number.toString())
+    }
+
+    tagsToString(tags: string[]): string {
+        let tagString = ''
+        tags.forEach(tag => tagString = tagString += ' #' + tag)
+        return tagString
+    }
+
+    updateTags() {
+        this.notes.forEach(note => {
+            note.tags.forEach(tag => this.tags.add(tag))
+        })
+    }
+
+    setfilterByTag(tag: string) {
+        this.filterByTag = tag
+        if (tag.length > 0) {
+            this.filteredNotes = this.notes.filter(note => new Set(note.tags).has(tag))
+        } else {
+            this.filteredNotes = this.notes
+        }
+    }
+
+    removeFilter() {
+        this.setfilterByTag('')
     }
 
     ngOnInit(): void {

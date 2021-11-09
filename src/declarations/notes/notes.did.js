@@ -14,7 +14,11 @@ export const idlFactory = ({ IDL }) => {
     'deleteNote' : IDL.Func([IDL.Int], [], []),
     'getNotes' : IDL.Func([], [IDL.Vec(Note)], ['query']),
     'notesCnt' : IDL.Func([], [IDL.Nat], []),
-    'updateNote' : IDL.Func([IDL.Int, IDL.Text, IDL.Text], [], []),
+    'updateNote' : IDL.Func(
+        [IDL.Int, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
+        [],
+        [],
+      ),
     'userCnt' : IDL.Func([], [IDL.Nat], []),
     'whoami' : IDL.Func([], [IDL.Text], []),
   });

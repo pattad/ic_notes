@@ -29,10 +29,10 @@ export class IcNotesService {
         return await notes_actor.addNote(title, content)
     }
 
-    public async updateNote(id: bigint, title: string, content: string) {
+    public async updateNote(id: bigint, title: string, content: string, tags: string[]) {
         let notes_actor = await this.getActor();
 
-        return await notes_actor.updateNote(id, title, content)
+        return await notes_actor.updateNote(id, title, content, tags)
     }
 
     public async deleteNote(id: bigint) {

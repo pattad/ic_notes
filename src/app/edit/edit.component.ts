@@ -13,8 +13,10 @@ export class EditComponent implements OnInit, OnDestroy {
 
     editor: Editor;
     title: string;
+    tags: string;
 
     editTitle: boolean = false;
+    editTags: boolean = false;
 
     toolbar: Toolbar = [
         ['bold', 'italic'],
@@ -38,6 +40,8 @@ export class EditComponent implements OnInit, OnDestroy {
         this.html = this.note.content
         this.editor.valueChanges.subscribe(value => this.html = toHTML(value))
         this.title = this.note.title
+        this.tags = ''
+        this.note.tags.forEach(tag => this.tags = this.tags += ' #' + tag)
     }
 
     ngOnInit(): void {
@@ -51,7 +55,7 @@ export class EditComponent implements OnInit, OnDestroy {
 
         this.note.content = this.html
 
-        this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content)
+        this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content, this.note.tags)
 
         this.router.navigate(['/home'], {state: {note: this.note}})
     }
@@ -59,6 +63,33 @@ export class EditComponent implements OnInit, OnDestroy {
     saveTitle() {
         this.note.title = this.title
         this.editTitle = false
+    }
+
+    saveTags() {
+        this.note.tags = []
+        let tmpTags = this.tags.replace(/#/g, '').replace(/,/g, '').split(' ')
+        tmpTags.forEach(tag => {
+            if (tag.trim().length > 0) this.note.tags = this.note.tags.concat([tag.trim()]);
+        })
+
+        // make it unique
+        this.note.tags = [...new Set(this.note.tags)]
+
+        this.tags = ''
+        this.note.tags.forEach(tag => this.tags = this.tags += ' #' + tag)
+
+        this.editTags = false
+    }
+
+    onTagChange() {
+        let tmpTags = this.tags.trim().replace(/#/g, '').replace(/,/g, '').split(' ')
+        console.info(tmpTags)
+        let tmpTags2 = ''
+        tmpTags.forEach(tag => {
+                if (tag.trim().length > 0) tmpTags2 = tmpTags2 += ' #' + tag.trim();
+            }
+        )
+        this.tags = tmpTags2
     }
 
     number(number: BigInt): number {

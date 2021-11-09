@@ -4,7 +4,7 @@ type anon_class_12_1 =
    deleteNote: (int) -> ();
    getNotes: () -> (vec Note) query;
    notesCnt: () -> (nat);
-   updateNote: (int, text, text) -> ();
+   updateNote: (int, text, text, vec text) -> ();
    userCnt: () -> (nat);
    whoami: () -> (text);
  };

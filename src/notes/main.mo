@@ -70,7 +70,7 @@ shared({ caller = initializer }) actor class() {
         };
     };
 
-    public shared({ caller }) func updateNote(id : Int, title: Text, content : Text): async () {
+    public shared({ caller }) func updateNote(id : Int, title: Text, content : Text, tags : [Text]): async () {
         let principalName = Principal.toText(caller);
         var notesOfUser = notesByUser.get(principalName);
 
@@ -83,7 +83,7 @@ shared({ caller = initializer }) actor class() {
                             return {
                                 id = note.id; title = title;
                                             content = content; createdAt = note.createdAt;
-                                            updatedAt = Time.now(); notebookId = note.notebookId; tags = note.tags;
+                                            updatedAt = Time.now(); notebookId = note.notebookId; tags = tags;
                                             isPrivate = note.isPrivate
                             };
                         };

@@ -14,9 +14,12 @@ export interface anon_class_12_1 {
   'deleteNote' : (arg_0: bigint) => Promise<undefined>,
   'getNotes' : () => Promise<Array<Note>>,
   'notesCnt' : () => Promise<bigint>,
-  'updateNote' : (arg_0: bigint, arg_1: string, arg_2: string) => Promise<
-      undefined
-    >,
+  'updateNote' : (
+      arg_0: bigint,
+      arg_1: string,
+      arg_2: string,
+      arg_3: Array<string>,
+    ) => Promise<undefined>,
   'userCnt' : () => Promise<bigint>,
   'whoami' : () => Promise<string>,
 }
