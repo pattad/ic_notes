@@ -6,7 +6,7 @@
 <p *ngIf="!editTags && tags.length == 0">{{tags}}<a (click)="editTags = true"> add Tag(s)</a></p>
 <p *ngIf="editTags">
     Tag(s):
-    <input type="text" id="tags" [(ngModel)]="tags" style="max-width: 15em" (ngModelChange)="onTagChange()" placeholder="#recipes #jokes #password"/><a (click)="saveTags()"> save</a>
+    <input type="text" id="tags" [(ngModel)]="tags" style="max-width: 15em" (ngModelChange)="onTagChange()" placeholder="#recipe #joke #passphrase"/><a (click)="saveTags()"> save</a>
 </p>
 <br>
 <div class="NgxEditor__Wrapper">

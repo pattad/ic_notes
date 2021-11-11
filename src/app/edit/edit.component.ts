@@ -1,5 +1,5 @@
-import { Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Editor, schema, toHTML, Toolbar } from "ngx-editor";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Editor, toHTML, Toolbar } from "ngx-editor";
 import { Note } from "../../declarations/notes/notes.did";
 import { IcNotesService } from "../ic-notes.service";
 import { Router } from "@angular/router";
@@ -25,7 +25,7 @@ export class EditComponent implements OnInit, OnDestroy {
         ['ordered_list', 'bullet_list'],
         [{heading: ['h1', 'h2', 'h3']}],
         // ['link', 'image'],
-        ['text_color', 'background_color'],
+        // ['text_color', 'background_color'],
         ['align_left', 'align_center', 'align_right'],
     ];
 

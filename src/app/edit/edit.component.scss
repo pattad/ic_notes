@@ -3,14 +3,66 @@
   display: block;
   overflow-x: hidden;
   overflow-wrap: anywhere;
+  background: var(--text-color);
 }
+
 
 .NgxEditor__Menu {
   overflow-wrap: anywhere;
   display: flow;
+  color: #585858;
 }
-p{
+
+p {
   margin: 0 0 0.1em 0;
 }
 
+::ng-deep { /* to penetrate <ngx-editor> CSS styling */
 
+  .NgxEditor {
+    background: var(--bkg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .NgxEditor__Content {
+    min-height: 10em;
+    max-height: 30em;
+  }
+
+
+  .NgxEditor h1 {
+    font-size: 2em;
+    line-height: 1.3;
+    margin: 0 0 1em 0;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: "Source Sans Pro", Helvetica, sans-serif;
+  }
+
+  .NgxEditor h2 {
+    font-size: 1.5em;
+    line-height: 1.3;
+    margin: 0 0 1em 0;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: "Source Sans Pro", Helvetica, sans-serif;
+  }
+
+  .NgxEditor h3 {
+    font-size: 1em;
+    line-height: 1.3;
+    margin: 0 0 1em 0;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: "Source Sans Pro", Helvetica, sans-serif;
+  }
+}

@@ -50,6 +50,7 @@ export class HomeComponent implements OnInit {
     }
 
     addNote() {
+        this.removeFilter()
         let tmpNote: Note[] = [{
             content: this.content,
             createdAt: BigInt(new Date().getTime() * 1000000),
@@ -61,7 +62,8 @@ export class HomeComponent implements OnInit {
             updatedAt: BigInt(0)
         }]
 
-        this.notes = tmpNote.concat(this.notes)
+        //this.notes = tmpNote.concat(this.notes)
+        this.filteredNotes = tmpNote.concat(this.notes)
 
         this.icNotesService.addNote(this.title, this.content).then(res => {
             this.getNotes()
@@ -78,18 +80,26 @@ export class HomeComponent implements OnInit {
                 note.updatedAt = BigInt(new Date().getTime() * 1000000)
             }
         })
+        this.filteredNotes.forEach(note => {
+            if (note.id == updatedNote.id) {
+                note.title = updatedNote.title
+                note.content = updatedNote.content
+                note.tags = updatedNote.tags
+                note.updatedAt = BigInt(new Date().getTime() * 1000000)
+            }
+        })
     }
 
     editNote(noteId: bigint) {
-        console.info(noteId)
-
-        this.router.navigate(['/edit'],
-            {state: {note: this.notes.filter(note => note.id == noteId)[0]}})
+        if (noteId > 0)
+            this.router.navigate(['/edit'],
+                {state: {note: this.notes.filter(note => note.id == noteId)[0]}})
 
     }
 
     deleteNote(noteId: bigint) {
         this.notes = this.notes.filter(note => note.id != noteId)
+        this.filteredNotes = this.filteredNotes.filter(note => note.id != noteId)
 
         this.icNotesService.deleteNote(noteId).then(res => {
             this.getNotes()

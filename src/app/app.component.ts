@@ -14,6 +14,9 @@ export class AppComponent {
                 private authClientWrapper: AuthClientWrapper,
                 private router: Router) {
         this.router.navigate(['/home'])
+        if(localStorage.getItem('ic-notes-dark-theme') == 'true'){
+            localStorage.setItem('ic-notes-dark-theme', String(document.body.classList.toggle('dark-theme')))
+        }
     }
 
     public isLoggedIn() {
@@ -36,5 +39,9 @@ export class AppComponent {
         this.authClientWrapper.logout().then(res =>
             this.router.navigate(['/home'])
         )
+    }
+
+    switchTheme() {
+        localStorage.setItem('ic-notes-dark-theme', String(document.body.classList.toggle('dark-theme')))
     }
 }
