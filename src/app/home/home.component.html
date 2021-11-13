@@ -1,11 +1,9 @@
 <div *ngIf="isLoggedIn()" class="inner">
     <p>Your private notes on the blockchain. </p>
 
-    Title
-    <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em"/>
+    <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em" placeholder="Title"/>
     <br>
-    Note
-    <textarea id="content" [(ngModel)]="content" style="max-width: 30em"></textarea>
+    <textarea id="content" [(ngModel)]="content" style="max-width: 30em" placeholder="Note..."></textarea>
     <br>
     <button *ngIf="isNewNote" (click)="addNote()">add Note</button>
 
@@ -17,8 +15,9 @@
     </div>
     <div class="card" *ngFor="let note of filteredNotes">
         <div class="container">
-            <b>{{note.title}}</b>
+            <p><b>{{note.title}}</b><br><br></p>
             <p style="white-space: pre-wrap; overflow-wrap: break-word" [innerHTML]="note.content"></p>
+            <br><br>
             <div *ngIf="number(note.createdAt) > 0"
                  style="text-align: left; float: left">{{number(note.createdAt) / 1000000 | date: 'shortDate'}} {{tagsToString(note.tags)}}</div>
             <div style="text-align: right;"><a (click)="editNote(note.id)">edit</a> - <a
@@ -29,7 +28,7 @@
 </div>
 <div *ngIf="!isLoggedIn()" class="inner">
     <p>Your private notes on the blockchain.</p>
-    <p>A save and simple way to store your shopping lists, cooking recipes, jokes, secret passphrases and much
+    <p>A save place to store your personal lists, thoughts, ideas or shared secrets and much
         more....</p>
     <p>Please login to start writing notes.</p>
     <button (click)="login()">Login</button>

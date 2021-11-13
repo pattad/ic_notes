@@ -51,8 +51,9 @@ export class HomeComponent implements OnInit {
 
     addNote() {
         this.removeFilter()
+        let content = '<p>' + this.content.replace(/\r\n|\r|\n/g, '<br>') +'</p>'
         let tmpNote: Note[] = [{
-            content: this.content,
+            content: content,
             createdAt: BigInt(new Date().getTime() * 1000000),
             id: BigInt(0),
             isPrivate: true,
@@ -62,10 +63,9 @@ export class HomeComponent implements OnInit {
             updatedAt: BigInt(0)
         }]
 
-        //this.notes = tmpNote.concat(this.notes)
         this.filteredNotes = tmpNote.concat(this.notes)
 
-        this.icNotesService.addNote(this.title, this.content).then(res => {
+        this.icNotesService.addNote(this.title, content).then(res => {
             this.getNotes()
         })
         this.resetFields();

@@ -3,7 +3,7 @@
   display: block;
   overflow-x: hidden;
   overflow-wrap: anywhere;
-  background: var(--text-color);
+  border-color: var(--text-color);
 }
 
 
@@ -14,7 +14,7 @@
 }
 
 p {
-  margin: 0 0 0.1em 0;
+  margin: 0 0 0.5em 0;
 }
 
 ::ng-deep { /* to penetrate <ngx-editor> CSS styling */
@@ -29,6 +29,10 @@ p {
     max-height: 30em;
   }
 
+  .NgxEditor p {
+    margin: 0 0 0 0 !important;
+    line-height: 1.0;
+  }
 
   .NgxEditor h1 {
     font-size: 2em;

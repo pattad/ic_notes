@@ -148,7 +148,7 @@ body.is-preload *, body.is-preload *:before, body.is-preload *:after {
 
 /* Add some padding inside the card container */
 .container {
-    padding: 2px 16px;
+    padding: 10px 16px;
 }
 
 .card h1 {
@@ -187,6 +187,11 @@ body.is-preload *, body.is-preload *:before, body.is-preload *:after {
     font-family: "Source Sans Pro", Helvetica, sans-serif;
 }
 
+.card p{
+    margin: 0 0 0 0;
+    line-height: 1.2;
+}
+
 /* Type */
 
 body, body.dark-theme, input, select, textarea {
@@ -194,7 +199,7 @@ body, body.dark-theme, input, select, textarea {
     font-family: "Source Sans Pro", Helvetica, sans-serif;
     font-size: 16pt;
     font-weight: 300;
-    line-height: 1.75;
+    line-height: 1;
 }
 
 @media screen and (max-width: 1680px) {
