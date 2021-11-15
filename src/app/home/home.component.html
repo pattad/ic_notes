@@ -1,26 +1,31 @@
 <div *ngIf="isLoggedIn()" class="inner">
     <p>Your private notes on the blockchain. </p>
 
-    <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em" placeholder="Title"/>
-    <br>
-    <textarea id="content" [(ngModel)]="content" style="max-width: 30em" placeholder="Note..."></textarea>
-    <br>
-    <button *ngIf="isNewNote" (click)="addNote()">add Note</button>
-
+    <div *ngIf="this.loaded && this.notes.length <= 3">
+        <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em" placeholder="Title"/>
+        <br>
+        <textarea id="content" [(ngModel)]="content" style="max-width: 30em" placeholder="start writing..."></textarea>
+        <br>
+        <button *ngIf="isNewNote" (click)="addNote()">add Note</button>
+    </div>
+    <div *ngIf="this.loaded && this.notes.length > 3">
+        <button *ngIf="isNewNote" (click)="addNoteFull()">add Note</button>
+    </div>
     <br/>
     <br/>
     <div *ngIf="tags.size > 0">
-        Filter By Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a (click)="removeFilter()"> -- remove filter</a>
+        Filter By Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a
+            (click)="removeFilter()"> -- remove filter</a>
         <br><br>
     </div>
     <div class="card" *ngFor="let note of filteredNotes">
         <div class="container">
             <p><b>{{note.title}}</b><br><br></p>
-            <p style="white-space: pre-wrap; overflow-wrap: break-word" [innerHTML]="note.content"></p>
-            <br><br>
+            <div style="white-space: pre-wrap; overflow-wrap: break-word; overflow-y: hidden; max-height: 9.5em; margin-bottom: 1em"
+                 [innerHTML]="note.content"></div>
             <div *ngIf="number(note.createdAt) > 0"
-                 style="text-align: left; float: left">{{number(note.createdAt) / 1000000 | date: 'shortDate'}} {{tagsToString(note.tags)}}</div>
-            <div style="text-align: right;"><a (click)="editNote(note.id)">edit</a> - <a
+                 style="text-align: left; float: left; ">{{number(note.createdAt) / 1000000 | date: 'shortDate'}} {{tagsToString(note.tags)}}</div>
+            <div style="text-align: right;"><a (click)="editNote(note.id)">edit/open</a> - <a
                     (click)="deleteNote(note.id)">delete</a>
             </div>
         </div>
@@ -28,12 +33,12 @@
 </div>
 <div *ngIf="!isLoggedIn()" class="inner">
     <p>Your private notes on the blockchain.</p>
-    <p>A save place to store your personal lists, thoughts, ideas or shared secrets and much
+    <p>A save place to store your personal lists, thoughts, ideas or passphrases and much
         more....</p>
     <p>Please login to start writing notes.</p>
     <button (click)="login()">Login</button>
     <br>
     <br>
-<!--    This is how it looks like:<br>-->
-<!--    <img src="assets/sample2.png"/>-->
+    <!--    This is how it looks like:<br>-->
+    <!--    <img src="assets/sample2.png"/>-->
 </div>

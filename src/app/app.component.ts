@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { IcNotesService } from "./ic-notes.service";
 import { AuthClientWrapper } from "./authClient";
 import { Router } from "@angular/router";
+import { LocalStorageService } from "./local-storage.service";
 
 @Component({
     selector: 'app-root',
@@ -12,9 +13,10 @@ export class AppComponent {
 
     constructor(private icNotesService: IcNotesService,
                 private authClientWrapper: AuthClientWrapper,
+                private localStorageService: LocalStorageService,
                 private router: Router) {
         this.router.navigate(['/home'])
-        if(localStorage.getItem('ic-notes-dark-theme') == 'true'){
+        if (localStorage.getItem('ic-notes-dark-theme') == 'true') {
             localStorage.setItem('ic-notes-dark-theme', String(document.body.classList.toggle('dark-theme')))
         }
     }
@@ -39,6 +41,11 @@ export class AppComponent {
         this.authClientWrapper.logout().then(res =>
             this.router.navigate(['/home'])
         )
+    }
+
+    public async newNote() {
+        this.localStorageService.setNewNote()
+        this.router.navigate(['/edit'])
     }
 
     switchTheme() {

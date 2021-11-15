@@ -1,9 +1,11 @@
-<p *ngIf="!editTitle"><b>{{title}}</b><a (click)="editTitle = true"> edit</a></p>
+<p *ngIf="!editTitle && title.length == 0"><b>{{title}}</b><a (click)="editTitle = true"> Add Title</a></p>
+<p *ngIf="!editTitle && title.length > 0"><b>{{title}}</b><a (click)="editTitle = true"> edit</a></p>
+
 <p *ngIf="editTitle">
     <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em"/><a (click)="saveTitle()"> save</a>
 </p>
 <p *ngIf="!editTags && tags.length > 0">Tag(s): {{tags}}<a (click)="editTags = true"> edit</a></p>
-<p *ngIf="!editTags && tags.length == 0">{{tags}}<a (click)="editTags = true"> add Tag(s)</a></p>
+<p *ngIf="!editTags && tags.length == 0">{{tags}}<a (click)="editTags = true"> Add Tag(s)</a></p>
 <p *ngIf="editTags">
     Tag(s):
     <input type="text" id="tags" [(ngModel)]="tags" style="max-width: 15em" (ngModelChange)="onTagChange()" placeholder="#recipe #joke #passphrase"/><a (click)="saveTags()"> save</a>
@@ -20,7 +22,7 @@
     ></ngx-editor>
 </div>
 <p *ngIf="number(note.updatedAt) == 0">Created: {{number(note.createdAt) / 1000000 | date: 'short' }} </p>
-<p *ngIf="number(note.updatedAt) > 0">Created: {{number(note.createdAt) / 1000000 | date: 'short' }}
+<p *ngIf="number(note.updatedAt) > 0">Created: {{number(note.createdAt) / 1000000 | date: 'short' }}<br>
     Updated: {{number(note.updatedAt) / 1000000 | date: 'short' }}</p>
 <br>
 <button *ngIf="true" (click)="updateNote()">Update Note</button>

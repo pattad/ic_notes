@@ -23,10 +23,10 @@ export class IcNotesService {
         return await ic_notes.userCnt()
     }
 
-    public async addNote(title: string, content: string) {
+    public async addNote(title: string, content: string, tags: string[]) {
         let notes_actor = await this.getActor();
 
-        return await notes_actor.addNote(title, content)
+        return await notes_actor.addNote(title, content, tags)
     }
 
     public async updateNote(id: bigint, title: string, content: string, tags: string[]) {

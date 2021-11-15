@@ -3,6 +3,7 @@ import { Editor, toHTML, Toolbar } from "ngx-editor";
 import { Note } from "../../declarations/notes/notes.did";
 import { IcNotesService } from "../ic-notes.service";
 import { Router } from "@angular/router";
+import { LocalStorageService } from "../local-storage.service";
 
 @Component({
     selector: 'app-edit',
@@ -34,9 +35,10 @@ export class EditComponent implements OnInit, OnDestroy {
     note: Note;
 
     constructor(private icNotesService: IcNotesService,
+                private localStorageService: LocalStorageService,
                 private router: Router) {
         this.editor = new Editor()
-        this.note = history.state.note;
+        this.note = this.localStorageService.getActiveNote()
         this.html = this.note.content
         this.editor.valueChanges.subscribe(value => this.html = toHTML(value))
         this.title = this.note.title
@@ -55,9 +57,14 @@ export class EditComponent implements OnInit, OnDestroy {
 
         this.note.content = this.html
 
-        this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content, this.note.tags)
-
-        this.router.navigate(['/home'], {state: {note: this.note}})
+        if (this.note.id != BigInt(0)) {
+            this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content, this.note.tags)
+            this.router.navigate(['/home'])
+        } else {
+            this.icNotesService.addNote(this.note.title, this.note.content, this.note.tags).then(
+                res => this.router.navigate(['/home'])
+            )
+        }
     }
 
     saveTitle() {

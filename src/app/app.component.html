@@ -30,6 +30,7 @@
             <h2>IC Notes</h2>
             <ul>
                 <li><a routerLink="/home" routerLinkActive="active">Home</a></li>
+                <li *ngIf="isLoggedIn()"><a (click)="newNote()">New Note</a></li>
                 <li *ngIf="!isLoggedIn()"><a (click)="login()">Login</a></li>
                 <li *ngIf="isLoggedIn()"><a (click)="logout()">Logout</a></li>
                 <li><a routerLink="/about" routerLinkActive="active">About</a></li>

@@ -10,7 +10,9 @@ export interface Note {
   'notebookId' : bigint,
 }
 export interface anon_class_12_1 {
-  'addNote' : (arg_0: string, arg_1: string) => Promise<undefined>,
+  'addNote' : (arg_0: string, arg_1: string, arg_2: Array<string>) => Promise<
+      undefined
+    >,
   'deleteNote' : (arg_0: bigint) => Promise<undefined>,
   'getNotes' : () => Promise<Array<Note>>,
   'notesCnt' : () => Promise<bigint>,

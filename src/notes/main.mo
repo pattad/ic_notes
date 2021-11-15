@@ -30,11 +30,11 @@ shared({ caller = initializer }) actor class() {
 
     private var notesByUser = Map.HashMap<PrincipalName, [Note]>(0, Text.equal, Text.hash);
 
-    public shared({ caller }) func addNote(title : Text, content : Text): async () {
+    public shared({ caller }) func addNote(title : Text, content : Text, tags : [Text]): async () {
 
         let note : Note = {id = nextNoteId; title = title;
             content = content; createdAt = Time.now();
-            updatedAt = 0; notebookId = 0; tags = []; isPrivate = true};
+            updatedAt = 0; notebookId = 0; tags = tags; isPrivate = true};
 
         nextNoteId += 1;
 

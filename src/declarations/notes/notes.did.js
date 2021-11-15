@@ -10,7 +10,7 @@ export const idlFactory = ({ IDL }) => {
     'notebookId' : IDL.Int,
   });
   const anon_class_12_1 = IDL.Service({
-    'addNote' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'addNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(IDL.Text)], [], []),
     'deleteNote' : IDL.Func([IDL.Int], [], []),
     'getNotes' : IDL.Func([], [IDL.Vec(Note)], ['query']),
     'notesCnt' : IDL.Func([], [IDL.Nat], []),

@@ -4,6 +4,7 @@ import { AuthClientWrapper } from "../authClient";
 import { Note } from "../../declarations/notes/notes.did";
 import { isLocalhost } from "../config";
 import { Router } from "@angular/router";
+import { LocalStorageService } from "../local-storage.service";
 
 @Component({
     selector: 'app-home',
@@ -25,8 +26,11 @@ export class HomeComponent implements OnInit {
 
     tags = new Set<string>()
 
+    loaded : boolean = false
+
     constructor(private icNotesService: IcNotesService,
                 private authClientWrapper: AuthClientWrapper,
+                private localStorageService: LocalStorageService,
                 private router: Router) {
 
         if (this.isLoggedIn()) {
@@ -41,17 +45,19 @@ export class HomeComponent implements OnInit {
     async getNotes() {
         this.icNotesService.getNotes().then(value => {
             this.notes = value
-            if (history.state.note != null) {
-                this.fastUpdate(history.state.note)
+            let activeNote = this.localStorageService.getActiveNote()
+            if (activeNote.id != BigInt(0)) {
+                this.fastUpdate(activeNote)
             }
             this.updateTags()
             this.setfilterByTag(this.filterByTag)
+            this.loaded = true
         })
     }
 
     addNote() {
         this.removeFilter()
-        let content = '<p>' + this.content.replace(/\r\n|\r|\n/g, '<br>') +'</p>'
+        let content = '<p>' + this.content.replace(/\r\n|\r|\n/g, '<br>') + '</p>'
         let tmpNote: Note[] = [{
             content: content,
             createdAt: BigInt(new Date().getTime() * 1000000),
@@ -65,7 +71,7 @@ export class HomeComponent implements OnInit {
 
         this.filteredNotes = tmpNote.concat(this.notes)
 
-        this.icNotesService.addNote(this.title, content).then(res => {
+        this.icNotesService.addNote(this.title, content, []).then(res => {
             this.getNotes()
         })
         this.resetFields();
@@ -91,10 +97,11 @@ export class HomeComponent implements OnInit {
     }
 
     editNote(noteId: bigint) {
-        if (noteId > 0)
-            this.router.navigate(['/edit'],
-                {state: {note: this.notes.filter(note => note.id == noteId)[0]}})
-
+        if (noteId > 0) {
+            let activeNote = this.notes.filter(note => note.id == noteId)[0]
+            this.localStorageService.setActiveNote(activeNote)
+            this.router.navigate(['/edit'])
+        }
     }
 
     deleteNote(noteId: bigint) {
@@ -160,6 +167,11 @@ export class HomeComponent implements OnInit {
 
     removeFilter() {
         this.setfilterByTag('')
+    }
+
+    public async addNoteFull() {
+        this.localStorageService.setNewNote()
+        this.router.navigate(['/edit'])
     }
 
     ngOnInit(): void {
