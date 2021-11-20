@@ -8,7 +8,8 @@
 <p *ngIf="!editTags && tags.length == 0">{{tags}}<a (click)="editTags = true"> Add Tag(s)</a></p>
 <p *ngIf="editTags">
     Tag(s):
-    <input type="text" id="tags" [(ngModel)]="tags" style="max-width: 15em" (ngModelChange)="onTagChange()" placeholder="#recipe #joke #passphrase"/><a (click)="saveTags()"> save</a>
+    <input type="text" id="tags" [(ngModel)]="tags" style="max-width: 15em" (ngModelChange)="onTagChange()"
+           placeholder="#recipe #joke #passphrase"/><a (click)="saveTags()"> save</a>
 </p>
 <br>
 <div class="NgxEditor__Wrapper">
@@ -18,11 +19,15 @@
             [editor]="editor"
             [ngModel]="html"
             [disabled]="false"
-            [placeholder]="'Type here...'"
+            [placeholder]="'Start writing...'"
     ></ngx-editor>
 </div>
 <p *ngIf="number(note.updatedAt) == 0">Created: {{number(note.createdAt) / 1000000 | date: 'short' }} </p>
 <p *ngIf="number(note.updatedAt) > 0">Created: {{number(note.createdAt) / 1000000 | date: 'short' }}<br>
     Updated: {{number(note.updatedAt) / 1000000 | date: 'short' }}</p>
 <br>
-<button *ngIf="true" (click)="updateNote()">Update Note</button>
+<button *ngIf="!isNewNote()" (click)="updateNote()">Update Note</button>
+<button *ngIf="isNewNote()" (click)="updateNote()">Add Note</button>
+
+<ngx-spinner bdColor="rgba(242, 132, 158, 0.1)" size="medium" type="square-jelly-box" [fullScreen]="true">
+    <p> saving... </p></ngx-spinner>

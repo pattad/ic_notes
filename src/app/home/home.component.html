@@ -1,20 +1,21 @@
 <div *ngIf="isLoggedIn()" class="inner">
-    <p>Your private notes on the blockchain. </p>
 
     <div *ngIf="this.loaded && this.notes.length <= 3">
-        <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em" placeholder="Title"/>
+        <p>Your private notes on the blockchain. </p>
+
+        <!--        <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em" placeholder="Title"/>-->
         <br>
         <textarea id="content" [(ngModel)]="content" style="max-width: 30em" placeholder="start writing..."></textarea>
         <br>
         <button *ngIf="isNewNote" (click)="addNote()">add Note</button>
     </div>
     <div *ngIf="this.loaded && this.notes.length > 3">
-        <button *ngIf="isNewNote" (click)="addNoteFull()">add Note</button>
+        <button *ngIf="isNewNote" (click)="addNoteFull()" class="button small">new Note</button>
     </div>
     <br/>
     <br/>
     <div *ngIf="tags.size > 0">
-        Filter By Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a
+        Filter by Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a
             (click)="removeFilter()"> -- remove filter</a>
         <br><br>
     </div>
@@ -42,3 +43,6 @@
     <!--    This is how it looks like:<br>-->
     <!--    <img src="assets/sample2.png"/>-->
 </div>
+
+<ngx-spinner bdColor="rgba(242, 132, 158, 0.1)" size="medium" type="square-jelly-box" [fullScreen]="true">
+    <p> saving... </p></ngx-spinner>

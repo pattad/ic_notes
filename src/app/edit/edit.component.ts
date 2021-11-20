@@ -4,6 +4,7 @@ import { Note } from "../../declarations/notes/notes.did";
 import { IcNotesService } from "../ic-notes.service";
 import { Router } from "@angular/router";
 import { LocalStorageService } from "../local-storage.service";
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
     selector: 'app-edit',
@@ -36,6 +37,7 @@ export class EditComponent implements OnInit, OnDestroy {
 
     constructor(private icNotesService: IcNotesService,
                 private localStorageService: LocalStorageService,
+                private spinner: NgxSpinnerService,
                 private router: Router) {
         this.editor = new Editor()
         this.note = this.localStorageService.getActiveNote()
@@ -58,11 +60,19 @@ export class EditComponent implements OnInit, OnDestroy {
         this.note.content = this.html
 
         if (this.note.id != BigInt(0)) {
+            this.spinner.show()
+            setTimeout(() => {
+                /** spinner ends after 5 seconds */
+                this.spinner.hide();
+            }, 800);
             this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content, this.note.tags)
             this.router.navigate(['/home'])
         } else {
+            this.spinner.show();
             this.icNotesService.addNote(this.note.title, this.note.content, this.note.tags).then(
-                res => this.router.navigate(['/home'])
+                res => {
+                    this.spinner.hide().then(res => this.router.navigate(['/home']))
+                }
             )
         }
     }
@@ -101,5 +111,9 @@ export class EditComponent implements OnInit, OnDestroy {
 
     number(number: BigInt): number {
         return parseInt(number.toString())
+    }
+
+    isNewNote(): boolean {
+        return this.note.id == BigInt(0)
     }
 }

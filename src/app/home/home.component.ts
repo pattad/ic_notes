@@ -5,6 +5,7 @@ import { Note } from "../../declarations/notes/notes.did";
 import { isLocalhost } from "../config";
 import { Router } from "@angular/router";
 import { LocalStorageService } from "../local-storage.service";
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
     selector: 'app-home',
@@ -26,10 +27,11 @@ export class HomeComponent implements OnInit {
 
     tags = new Set<string>()
 
-    loaded : boolean = false
+    loaded: boolean = false
 
     constructor(private icNotesService: IcNotesService,
                 private authClientWrapper: AuthClientWrapper,
+                private spinner: NgxSpinnerService,
                 private localStorageService: LocalStorageService,
                 private router: Router) {
 
@@ -43,7 +45,7 @@ export class HomeComponent implements OnInit {
     }
 
     async getNotes() {
-        this.icNotesService.getNotes().then(value => {
+        return this.icNotesService.getNotes().then(value => {
             this.notes = value
             let activeNote = this.localStorageService.getActiveNote()
             if (activeNote.id != BigInt(0)) {
@@ -56,6 +58,11 @@ export class HomeComponent implements OnInit {
     }
 
     addNote() {
+        this.spinner.show()
+        setTimeout(() => {
+            /** spinner ends after 5 seconds */
+            this.spinner.hide();
+        }, 800);
         this.removeFilter()
         let content = '<p>' + this.content.replace(/\r\n|\r|\n/g, '<br>') + '</p>'
         let tmpNote: Note[] = [{

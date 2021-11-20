@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
@@ -9,6 +9,8 @@ import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { EditComponent } from './edit/edit.component';
 import { NgxEditorModule } from "ngx-editor";
+import { NgxSpinnerModule } from "ngx-spinner";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 @NgModule({
     declarations: [
@@ -21,8 +23,11 @@ import { NgxEditorModule } from "ngx-editor";
         BrowserModule,
         AppRoutingModule,
         FormsModule,
-        NgxEditorModule
+        NgxEditorModule,
+        NgxSpinnerModule,
+        BrowserAnimationsModule
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     providers: [AuthClientWrapper],
     bootstrap: [AppComponent]
 })
