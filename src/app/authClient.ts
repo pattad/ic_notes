@@ -4,7 +4,6 @@ import { getIdentityUrl } from './config';
 
 export class AuthClientWrapper {
     public authClient?: AuthClient;
-    public ready = false;
     public isLoggedIn = false;
 
     constructor() {
@@ -14,8 +13,10 @@ export class AuthClientWrapper {
     // Create a new auth client and update it's ready state
     async create() {
         this.authClient = await AuthClient.create();
-        await this.authClient?.isAuthenticated();
-        this.ready = true;
+        const isAuthenticated = await this.authClient?.isAuthenticated();
+        if (isAuthenticated && !this.authClient?.getIdentity().getPrincipal().isAnonymous()) {
+            this.isLoggedIn = true
+        }
     }
 
     async login(): Promise<Identity | undefined> {

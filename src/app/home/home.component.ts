@@ -37,6 +37,13 @@ export class HomeComponent implements OnInit {
 
         if (this.isLoggedIn()) {
             this.getNotes()
+        } else {
+            // try again when auth is initialized
+            setTimeout(() => {
+                if (this.isLoggedIn()) {
+                    this.getNotes()
+                }
+            }, 600);
         }
     }
 
@@ -60,7 +67,6 @@ export class HomeComponent implements OnInit {
     addNote() {
         this.spinner.show()
         setTimeout(() => {
-            /** spinner ends after 5 seconds */
             this.spinner.hide();
         }, 800);
         this.removeFilter()
@@ -123,8 +129,6 @@ export class HomeComponent implements OnInit {
     }
 
     async login() {
-        await this.authClientWrapper.create()
-
         if (isLocalhost) {
             this.authClientWrapper.isLoggedIn = true;
             this.getNotes()

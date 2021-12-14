@@ -15,10 +15,11 @@ export class AppComponent {
                 private authClientWrapper: AuthClientWrapper,
                 private localStorageService: LocalStorageService,
                 private router: Router) {
-        this.router.navigate(['/home'])
         if (localStorage.getItem('ic-notes-dark-theme') == 'true') {
             localStorage.setItem('ic-notes-dark-theme', String(document.body.classList.toggle('dark-theme')))
         }
+
+        this.authClientWrapper.create().then(res => this.router.navigate(['/home']))
     }
 
     public isLoggedIn() {
@@ -26,7 +27,6 @@ export class AppComponent {
     }
 
     public async login() {
-        await this.authClientWrapper.create()
         this.authClientWrapper.login().then(res => {
             console.info('identity: ')
             console.info(res)
