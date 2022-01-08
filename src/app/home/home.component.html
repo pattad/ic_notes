@@ -3,7 +3,6 @@
     <div *ngIf="this.loaded && this.notes.length <= 3">
         <p>Your private notes on the blockchain. </p>
 
-        <!--        <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em" placeholder="Title"/>-->
         <br>
         <textarea id="content" [(ngModel)]="content" style="max-width: 30em" placeholder="start writing..."></textarea>
         <br>
@@ -14,9 +13,13 @@
     </div>
     <br/>
     <br/>
-    <div *ngIf="tags.size > 0">
+    <div *ngIf="tags.size > 0" style="text-align: left; float: left;">
         Filter by Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a
             (click)="removeFilter()"> -- remove filter</a>
+        <br><br>
+    </div>
+    <div *ngIf="notes.length > 3" style="text-align: right; ">
+        Sort by <a (click)="sortBy('updated')">updated</a>&nbsp;<a (click)="sortBy('created')">created</a>
         <br><br>
     </div>
     <div class="card" *ngFor="let note of filteredNotes">

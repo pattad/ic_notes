@@ -29,6 +29,8 @@ export class HomeComponent implements OnInit {
 
     loaded: boolean = false
 
+    sortedBy: string = 'updated'
+
     constructor(private icNotesService: IcNotesService,
                 private authClientWrapper: AuthClientWrapper,
                 private spinner: NgxSpinnerService,
@@ -174,6 +176,7 @@ export class HomeComponent implements OnInit {
         } else {
             this.filteredNotes = this.notes
         }
+        this.sortNotes()
     }
 
     removeFilter() {
@@ -183,6 +186,19 @@ export class HomeComponent implements OnInit {
     public async addNoteFull() {
         this.localStorageService.setNewNote()
         this.router.navigate(['/edit'])
+    }
+
+    sortBy(attribute: string) {
+        this.sortedBy = attribute
+        this.sortNotes()
+    }
+
+    sortNotes() {
+        if (this.sortedBy == 'updated') {
+            this.filteredNotes.sort((a, b) => a.updatedAt < b.updatedAt ? 1 : -1)
+        } else if (this.sortedBy == 'created') {
+            this.filteredNotes.sort((a, b) => a.createdAt < b.createdAt ? 1 : -1)
+        }
     }
 
     ngOnInit(): void {

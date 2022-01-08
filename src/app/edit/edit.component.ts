@@ -52,12 +52,15 @@ export class EditComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.editor.destroy();
+        this.editor.destroy()
     }
 
     updateNote() {
 
         this.note.content = this.html
+
+        this.saveTitle()
+        this.saveTags()
 
         if (this.note.id != BigInt(0)) {
             this.spinner.show()
@@ -115,5 +118,27 @@ export class EditComponent implements OnInit, OnDestroy {
 
     isNewNote(): boolean {
         return this.note.id == BigInt(0)
+    }
+
+    navigateToHome() {
+        this.router.navigate(['/home'])
+    }
+
+    focusOn(id: string) {
+        document.getElementById(id)?.focus()
+    }
+
+    eTitle() {
+        this.editTitle = true
+        setTimeout(() => {
+            this.focusOn('title')
+        }, 100);
+    }
+
+    eTags() {
+        this.editTags = true
+        setTimeout(() => {
+            this.focusOn('tags')
+        }, 100);
     }
 }
