@@ -77,11 +77,15 @@ export class HomeComponent implements OnInit {
             content: content,
             createdAt: BigInt(new Date().getTime() * 1000000),
             id: BigInt(0),
-            isPrivate: true,
-            notebookId: BigInt(0),
+            isSensitive: false,
+            isMarked: false,
+            sortOrder: BigInt(0),
+            boardId: BigInt(0),
             tags: [],
             title: this.title,
-            updatedAt: BigInt(0)
+            updatedAt: BigInt(0),
+            createdBy: '',
+            updatedBy: ''
         }]
 
         this.filteredNotes = tmpNote.concat(this.notes)

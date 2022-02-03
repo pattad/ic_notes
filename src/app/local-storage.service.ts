@@ -17,11 +17,15 @@ export class LocalStorageService {
             content: '',
             createdAt: BigInt(new Date().getTime() * 1000000),
             id: BigInt(0),
-            isPrivate: true,
-            notebookId: BigInt(0),
+            isSensitive: false,
+            sortOrder: BigInt(0),
+            isMarked: false,
+            boardId: BigInt(0),
             tags: [],
             title: '',
-            updatedAt: BigInt(0)
+            updatedAt: BigInt(new Date().getTime() * 1000000),
+            createdBy: '',
+            updatedBy: ''
         }
         return newNote
     }

@@ -9,6 +9,12 @@ import Nat "mo:base/Nat";
 import Bool "mo:base/Bool";
 import Principal "mo:base/Principal";
 
+// imports for UUID module
+import Debug "mo:base/Debug";
+import UUID "mo:uuid/UUID";
+import Source "mo:uuid/Source";
+import XorShift "mo:rand/XorShift";
+
 shared({ caller = initializer }) actor class() {
 
     type PrincipalName = Text;
@@ -17,28 +23,65 @@ shared({ caller = initializer }) actor class() {
         id : Int;
         title : Text;
         tags : [Text];
-        notebookId : Int;
+        boardId : Int;
         content : Text;
+        isSensitive : Bool;
+        isMarked : Bool;
+        sortOrder : Int;
+        createdAt : Int;
+        updatedAt : Int;
+        createdBy : PrincipalName;
+        updatedBy : PrincipalName;
+    };
+
+    public type Board = {
+        uuid : Text;
+        name : Text;
+        description : Text;
+        admins : [PrincipalName];
+        membersWrite : [PrincipalName];
+        membersRead : [PrincipalName];
+        notes : [Note];
         isPrivate : Bool;
+        createdAt : Int;
+        updatedAt : Int;
+    };
+
+    public type BoardAccessRequest = {
+        id : Int;
+        boardUuid : Text;
+        user : PrincipalName;
+        accessGranted : Bool;
+        grantedByUser : PrincipalName;
         createdAt : Int;
         updatedAt : Int;
     };
 
     private stable var nextNoteId : Nat = 1;
 
+    private stable var nextBoardId : Nat = 1;
+
     private stable var stable_notesByUser : [(PrincipalName, [Note])] = [];
 
     private var notesByUser = Map.HashMap<PrincipalName, [Note]>(0, Text.equal, Text.hash);
 
+    private var boardsByUuid = Map.HashMap<Text, Board>(0, Text.equal, Text.hash);
+
+    // variables for UUID generation
+	private let rr = XorShift.toReader(XorShift.XorShift64(null));
+	private let c : [Nat8] = [0, 0, 0, 0, 0, 0]; // Replace with identifier of canister f.e.
+	private let se = Source.Source(rr, c);
+
     public shared({ caller }) func addNote(title : Text, content : Text, tags : [Text]): async () {
+        let principalName = Principal.toText(caller);
 
         let note : Note = {id = nextNoteId; title = title;
             content = content; createdAt = Time.now();
-            updatedAt = 0; notebookId = 0; tags = tags; isPrivate = true};
+            updatedAt = Time.now(); boardId = 0; tags = tags; isSensitive = false;
+            isMarked = false; sortOrder = 0;
+            createdBy = principalName; updatedBy = principalName};
 
         nextNoteId += 1;
-
-        let principalName = Principal.toText(caller);
 
         var notesOfUser = notesByUser.get(principalName);
 
@@ -83,8 +126,12 @@ shared({ caller = initializer }) actor class() {
                             return {
                                 id = note.id; title = title;
                                             content = content; createdAt = note.createdAt;
-                                            updatedAt = Time.now(); notebookId = note.notebookId; tags = tags;
-                                            isPrivate = note.isPrivate
+                                            updatedAt = Time.now(); boardId = note.boardId; tags = tags;
+                                            isSensitive = note.isSensitive;
+                                            isMarked = note.isMarked;
+                                            sortOrder = note.sortOrder;
+                                            createdBy = note.createdBy;
+                                            updatedBy = note.updatedBy;
                             };
                         };
                         note
@@ -126,6 +173,12 @@ shared({ caller = initializer }) actor class() {
     public func userCnt() : async Nat {
         return notesByUser.size();
     };
+
+	public func newUuid() : async Text {
+	    let id = se.new();
+	    Debug.print(debug_show((id, id.size())));
+	    UUID.toText(id);
+	};
 
     system func preupgrade() {
          stable_notesByUser := Iter.toArray(notesByUser.entries());

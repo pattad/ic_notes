@@ -13,13 +13,16 @@
     </div>
     <br/>
     <br/>
-    <div *ngIf="tags.size > 0" style="text-align: left; float: left;">
+    <div *ngIf="tags.size > 0" style="text-align: left; float: left">
         Filter by Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a
             (click)="removeFilter()"> -- remove filter</a>
         <br><br>
     </div>
     <div *ngIf="notes.length > 3" style="text-align: right; ">
         Sort by <a (click)="sortBy('updated')">updated</a>&nbsp;<a (click)="sortBy('created')">created</a>
+        <br><br>
+    </div>
+    <div *ngIf="notes.length <= 3" style="text-align: right; ">
         <br><br>
     </div>
     <div class="card" *ngFor="let note of filteredNotes">

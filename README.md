@@ -1,5 +1,5 @@
 # ic-notes
-This is a notes app the Internet Computer's motoko project along side Angular
+This app uses Internet Computer's motoko language along side Angular
 
 &nbsp;
 
@@ -13,7 +13,7 @@ This is a notes app the Internet Computer's motoko project along side Angular
 1. Install npm packages from the project root: 
 
     `npm install`
-
+1. Install [Vessel](https://github.com/dfinity/vessel) package manager for motoko
 &nbsp;
 
 ---

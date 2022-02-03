@@ -1,22 +1,28 @@
-type anon_class_12_1 = 
+type anon_class_18_1 = 
  service {
    addNote: (text, text, vec text) -> ();
    deleteNote: (int) -> ();
    getNotes: () -> (vec Note) query;
+   newUuid: () -> (text);
    notesCnt: () -> (nat);
    updateNote: (int, text, text, vec text) -> ();
    userCnt: () -> (nat);
    whoami: () -> (text);
  };
+type PrincipalName = text;
 type Note = 
  record {
+   boardId: int;
    content: text;
    createdAt: int;
+   createdBy: PrincipalName;
    id: int;
-   isPrivate: bool;
-   notebookId: int;
+   isMarked: bool;
+   isSensitive: bool;
+   sortOrder: int;
    tags: vec text;
    title: text;
    updatedAt: int;
+   updatedBy: PrincipalName;
  };
-service : () -> anon_class_12_1
+service : () -> anon_class_18_1
