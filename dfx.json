@@ -17,11 +17,6 @@
       "type": "assets"
     }
   },
-  "defaults": {
-    "build": {
-      "packtool": "vessel sources"
-    }
-  },
   "dfx": "0.8.4",
   "networks": {
     "local": {

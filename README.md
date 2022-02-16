@@ -13,8 +13,7 @@ This app uses Internet Computer's motoko language along side Angular
 1. Install npm packages from the project root: 
 
     `npm install`
-1. Install [Vessel](https://github.com/dfinity/vessel) package manager for motoko
-&nbsp;
+
 
 ---
 ### Serve Angular and the IC backend server locally with live reloading:

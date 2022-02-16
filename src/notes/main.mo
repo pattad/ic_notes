@@ -9,11 +9,6 @@ import Nat "mo:base/Nat";
 import Bool "mo:base/Bool";
 import Principal "mo:base/Principal";
 
-// imports for UUID module
-import Debug "mo:base/Debug";
-import UUID "mo:uuid/UUID";
-import Source "mo:uuid/Source";
-import XorShift "mo:rand/XorShift";
 
 shared({ caller = initializer }) actor class() {
 
@@ -66,11 +61,6 @@ shared({ caller = initializer }) actor class() {
     private var notesByUser = Map.HashMap<PrincipalName, [Note]>(0, Text.equal, Text.hash);
 
     private var boardsByUuid = Map.HashMap<Text, Board>(0, Text.equal, Text.hash);
-
-    // variables for UUID generation
-	private let rr = XorShift.toReader(XorShift.XorShift64(null));
-	private let c : [Nat8] = [0, 0, 0, 0, 0, 0]; // Replace with identifier of canister f.e.
-	private let se = Source.Source(rr, c);
 
     public shared({ caller }) func addNote(title : Text, content : Text, tags : [Text]): async () {
         let principalName = Principal.toText(caller);
@@ -174,11 +164,6 @@ shared({ caller = initializer }) actor class() {
         return notesByUser.size();
     };
 
-	public func newUuid() : async Text {
-	    let id = se.new();
-	    Debug.print(debug_show((id, id.size())));
-	    UUID.toText(id);
-	};
 
     system func preupgrade() {
          stable_notesByUser := Iter.toArray(notesByUser.entries());
