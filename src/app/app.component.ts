@@ -48,6 +48,10 @@ export class AppComponent {
         this.router.navigate(['/edit'])
     }
 
+    public async newBoard() {
+        this.router.navigate(['/newBoard'])
+    }
+
     switchTheme() {
         localStorage.setItem('ic-notes-dark-theme', String(document.body.classList.toggle('dark-theme')))
     }

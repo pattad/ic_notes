@@ -11,13 +11,15 @@ import { EditComponent } from './edit/edit.component';
 import { NgxEditorModule } from "ngx-editor";
 import { NgxSpinnerModule } from "ngx-spinner";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { NewBoardComponent } from './newboard/newboard.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         AboutComponent,
         HomeComponent,
-        EditComponent
+        EditComponent,
+        NewBoardComponent
     ],
     imports: [
         BrowserModule,
