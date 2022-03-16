@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Note } from "../declarations/notes/notes.did";
+import { Board, BoardAccessRequest, Note } from "../declarations/notes/notes.did";
+import { IcNotesService } from "./ic-notes.service";
 
 @Injectable({
     providedIn: 'root'
@@ -7,12 +8,19 @@ import { Note } from "../declarations/notes/notes.did";
 export class LocalStorageService {
 
     private activeNote: Note
+    private activeBoard: Board | null
 
-    constructor() {
+    private boardIds: string[] = []
+    private boards: Board[] = []
+
+    private accessRequests: BoardAccessRequest[] = []
+
+    constructor(private icNotesService: IcNotesService) {
         this.activeNote = this.createNewNote()
+        this.activeBoard = null
     }
 
-    private createNewNote() : Note {
+    private createNewNote(): Note {
         var newNote: Note = {
             content: '',
             createdAt: BigInt(new Date().getTime() * 1000000),
@@ -30,7 +38,7 @@ export class LocalStorageService {
         return newNote
     }
 
-    public setNewNote(){
+    public setNewNote() {
         this.activeNote = this.createNewNote()
     }
 
@@ -40,5 +48,52 @@ export class LocalStorageService {
 
     public getActiveNote(): Note {
         return this.activeNote
+    }
+
+    public getActiveBoard(): Board | null {
+        return this.activeBoard
+    }
+
+    public async setActiveBoard(value: Board | null) {
+        this.activeBoard = value
+        this.refreshAccessRequests()
+    }
+
+    public refreshAccessRequests() {
+        this.accessRequests = []
+        this.icNotesService.getAccessRequests(this.activeBoard?.id!).then(requests => {
+            this.accessRequests = requests.filter(req => req.status == 'open')
+        });
+    }
+
+    public updateBoards(board: Board) {
+        for (let i = 0; i < this.boards.length; i++) {
+            if (this.boards[i].id == board.id) {
+                this.boards[i] = board
+            }
+        }
+    }
+
+    public getAccessRequests() : BoardAccessRequest[] {
+        return this.accessRequests
+    }
+
+    public getBoardIds(): string[] {
+        return this.boardIds
+    }
+
+    public getBoards(): Board[] {
+        return this.boards
+    }
+
+    public async loadBoards() {
+        await this.icNotesService.getBoardIdsOfUser().then(boardIds => {
+            this.boardIds = boardIds
+            let boards: Board[] = []
+            boardIds.forEach(async boardId => {
+                await this.icNotesService.getBoard(boardId).then(board => boards.push(board))
+            })
+            this.boards = boards
+        })
     }
 }

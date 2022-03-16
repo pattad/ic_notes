@@ -1,0 +1,10 @@
+<h2>Request access to board</h2>
+<p>Get access to the board. Once you have submitted your request, it needs to be approved by a board admin.</p>
+
+Your Display Name <input type="text" [(ngModel)]="name" id="name" style="max-width: 15em"/><br>
+
+<button (click)="requestAccess()">Request Access</button>&nbsp;
+
+
+<ngx-spinner bdColor="rgba(242, 132, 158, 0.1)" size="medium" type="square-jelly-box" [fullScreen]="true">
+    <p> requesting access... </p></ngx-spinner>

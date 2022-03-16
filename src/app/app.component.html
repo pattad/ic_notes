@@ -1,4 +1,17 @@
 <div class='wrapper'>
+    <div *ngIf="showBanner">
+        <blockquote>Link to this board <b>{{this.getBoardUrl()}}</b>
+            &nbsp;&nbsp;<button class="button small" (click)="copyToClipboard()">copy</button>
+            &nbsp;&nbsp;<button class="button small" (click)="hideBanner()">X</button>
+
+        </blockquote>
+    </div>
+    <blockquote *ngFor="let req of this.getAccessRequests()">Access Request from User <b>{{req.displayName}}</b>, grant
+        &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'admin')">admin</button>
+        &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'write')">write</button>
+        &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'read')">read only</button>
+        &nbsp;&nbsp;<button class="button small" (click)="declineReq(req.id)">x</button>
+    </blockquote>
     <header id="header">
         <div class="inner">
 
@@ -9,6 +22,10 @@
             <!-- Nav -->
             <nav>
                 <ul>
+                    <li *ngIf="getActiveBoard() != null"><a (click)="showBanner=true" class="icon brands"><img
+                            src="../assets/share.svg" width="50em"/></a>
+                    </li>
+                    <li><b>{{this.getActiveBoardName()}}&nbsp;&nbsp;</b></li>
                     <li>
                         <!-- Rounded switch -->
                         <label class="switch">
@@ -19,19 +36,18 @@
                     <li><a href="#menu">Menu</a></li>
                 </ul>
             </nav>
-
         </div>
     </header>
 
     <!-- Menu -->
     <nav id="menu">
         <div class="inner">
-
             <h2>IC Notes</h2>
             <ul>
-                <li><a routerLink="/home" routerLinkActive="active">Home</a></li>
+                <li><a (click)="openDefaultNotes()">Home</a></li>
                 <li *ngIf="isLoggedIn()"><a (click)="newNote()">New Note</a></li>
                 <li *ngIf="isLoggedIn()"><a (click)="newBoard()">New Board</a></li>
+                <li *ngFor="let board of this.getBoards()"><a (click)="openBoard(board)">>> {{board.name}}</a></li>
                 <li *ngIf="!isLoggedIn()"><a (click)="login()">Login</a></li>
                 <li *ngIf="isLoggedIn()"><a (click)="logout()">Logout</a></li>
                 <li><a routerLink="/about" routerLinkActive="active">About</a></li>
@@ -50,6 +66,7 @@
             <ul class="copyright">
                 <li>IC Notes - The first notebook that runs on the dfinity IC (Internet Computer).</li>
                 <li><img style="vertical-align: middle" src="/assets/dfinity.png" alt="" width="30em"></li>
+                <li><a href="https://twitter.com/icNotesApp" target="_blank"><img style="vertical-align: middle" src="/assets/twitter.svg" alt="" width="30em"></a> </li>
             </ul>
         </div>
     </footer>

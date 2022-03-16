@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NewBoardComponent } from './newboard.component';
+import { ReqAccessComponent } from './req-access.component';
 
-describe('NewBoardComponent', () => {
-  let component: NewBoardComponent;
-  let fixture: ComponentFixture<NewBoardComponent>;
+describe('ReqAccessComponent', () => {
+  let component: ReqAccessComponent;
+  let fixture: ComponentFixture<ReqAccessComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NewBoardComponent ]
+      declarations: [ ReqAccessComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NewBoardComponent);
+    fixture = TestBed.createComponent(ReqAccessComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

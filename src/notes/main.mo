@@ -51,7 +51,8 @@ shared({ caller = initializer }) actor class() {
         id : Int;
         boardId : BoardId;
         user : PrincipalName;
-        accessGranted : Bool;
+        displayName: Text;
+        status: Text;
         grantedByUser : ?PrincipalName;
         createdAt : Int;
         updatedAt : Int;
@@ -73,6 +74,9 @@ shared({ caller = initializer }) actor class() {
     private stable var stable_requestsByBoard : [(BoardId, [BoardAccessRequest])] = [];
     private var requestsByBoard = Map.HashMap<BoardId, [BoardAccessRequest]>(0, Text.equal, Text.hash);
 
+    private stable var stable_userNames : [(PrincipalName, Text)] = [];
+    private var userNames = Map.HashMap<PrincipalName, Text>(0, Text.equal, Text.hash);
+
     public type CommonError = {
         #duplicate_id : Text;
         #board_not_found : Text;
@@ -80,12 +84,13 @@ shared({ caller = initializer }) actor class() {
         #other : Text;
     };
 
-    public shared({ caller }) func requestAccess(boardId : BoardId): async ()  {
+    public shared({ caller }) func requestAccess(boardId : BoardId, displayName : Text): async ()  {
         let principalName = Principal.toText(caller);
 
         let request : BoardAccessRequest = {id = nextRequestId; boardId = boardId;
             user = principalName;
-            accessGranted = false;
+            displayName = displayName;
+            status = "open";
             grantedByUser = null;
             createdAt = Time.now();
             updatedAt = Time.now()};
@@ -105,9 +110,11 @@ shared({ caller = initializer }) actor class() {
                 requestsByBoard.put(boardId, requests);
             };
         };
+
+        userNames.put(principalName, displayName);
     };
 
-    public shared({ caller }) func getAccessRequests(boardId : BoardId): async Result.Result<[BoardAccessRequest], CommonError>   {
+    public query({ caller }) func getAccessRequests(boardId : BoardId): async Result.Result<[BoardAccessRequest], CommonError>   {
         let principalName = Principal.toText(caller);
 
         var requests = requestsByBoard.get(boardId);
@@ -122,7 +129,7 @@ shared({ caller = initializer }) actor class() {
         };
     };
 
-    public shared({ caller }) func grantAccessRequest(boardId : BoardId, requestId : Int, permission : Text): async Result.Result<(), CommonError>   {
+    public shared({ caller }) func grantAccessRequest(boardId : BoardId, requestId : Int, permission : Text, status : Text): async Result.Result<(), CommonError>   {
         let principalName = Principal.toText(caller);
 
         var board = boardsById.get(boardId);
@@ -150,7 +157,8 @@ shared({ caller = initializer }) actor class() {
                                     user := ?req.user;
                                     return  {id = req.id; boardId = req.boardId;
                                                        user = req.user;
-                                                       accessGranted = true;
+                                                       displayName = req.displayName;
+                                                       status = status;
                                                        grantedByUser = ?principalName;
                                                        createdAt = req.createdAt;
                                                        updatedAt = Time.now()};
@@ -159,48 +167,52 @@ shared({ caller = initializer }) actor class() {
                             });
                             requestsByBoard.put(boardId, updatedRequest);
 
-                            switch(user) {
-                                case (?exsistingUser) {
+                            if(status == "granted") {
+                                switch(user) {
+                                    case (?exsistingUser) {
 
-                                    switch(permission) {
-                                         case ("admin") {
-                                            var updatedUsers = Array.append<PrincipalName>([exsistingUser], existingBoard.admins);
-                                            let board : Board = {id = existingBoard.id; name = existingBoard.name;
-                                                        description = existingBoard.description; createdAt = existingBoard.createdAt;
-                                                        updatedAt = Time.now(); notes = existingBoard.notes; isPrivate = existingBoard.isPrivate;
-                                                        admins = updatedUsers; membersWrite = existingBoard.membersWrite; membersRead = existingBoard.membersRead};
-                                            boardsById.put(boardId, board);
-                                            addBoardToUser(existingBoard.id,exsistingUser);
-                                            #ok();
-                                         };
-                                        case ("read") {
-                                            var updatedUsers = Array.append<PrincipalName>([exsistingUser], existingBoard.membersRead);
-                                            let board : Board = {id = existingBoard.id; name = existingBoard.name;
-                                                        description = existingBoard.description; createdAt = existingBoard.createdAt;
-                                                        updatedAt = Time.now(); notes = existingBoard.notes; isPrivate = existingBoard.isPrivate;
-                                                        admins = existingBoard.admins; membersWrite = existingBoard.membersWrite; membersRead = updatedUsers};
-                                            boardsById.put(boardId, board);
-                                            addBoardToUser(existingBoard.id,exsistingUser);
-                                            #ok();
-                                         };
-                                          case ("write") {
-                                             var updatedUsers = Array.append<PrincipalName>([exsistingUser], existingBoard.membersWrite);
-                                             let board : Board = {id = existingBoard.id; name = existingBoard.name;
-                                                         description = existingBoard.description; createdAt = existingBoard.createdAt;
-                                                         updatedAt = Time.now(); notes = existingBoard.notes; isPrivate = existingBoard.isPrivate;
-                                                         admins = existingBoard.admins; membersWrite = updatedUsers; membersRead = existingBoard.membersRead};
-                                             boardsById.put(boardId, board);
-                                             addBoardToUser(existingBoard.id,exsistingUser);
-                                             #ok();
-                                          };
-                                          case(_) {
-                                            #err(#other("invalid permission requested"));
-                                          };
+                                        switch(permission) {
+                                             case ("admin") {
+                                                var updatedUsers = Array.append<PrincipalName>([exsistingUser], existingBoard.admins);
+                                                let board : Board = {id = existingBoard.id; name = existingBoard.name; icon = null;
+                                                            description = existingBoard.description; createdAt = existingBoard.createdAt;
+                                                            updatedAt = Time.now(); notes = existingBoard.notes; isPrivate = existingBoard.isPrivate;
+                                                            admins = updatedUsers; membersWrite = existingBoard.membersWrite; membersRead = existingBoard.membersRead};
+                                                boardsById.put(boardId, board);
+                                                addBoardToUser(existingBoard.id,exsistingUser);
+                                                #ok();
+                                             };
+                                            case ("read") {
+                                                var updatedUsers = Array.append<PrincipalName>([exsistingUser], existingBoard.membersRead);
+                                                let board : Board = {id = existingBoard.id; name = existingBoard.name; icon = null;
+                                                            description = existingBoard.description; createdAt = existingBoard.createdAt;
+                                                            updatedAt = Time.now(); notes = existingBoard.notes; isPrivate = existingBoard.isPrivate;
+                                                            admins = existingBoard.admins; membersWrite = existingBoard.membersWrite; membersRead = updatedUsers};
+                                                boardsById.put(boardId, board);
+                                                addBoardToUser(existingBoard.id,exsistingUser);
+                                                #ok();
+                                             };
+                                              case ("write") {
+                                                 var updatedUsers = Array.append<PrincipalName>([exsistingUser], existingBoard.membersWrite);
+                                                 let board : Board = {id = existingBoard.id; name = existingBoard.name; icon = null;
+                                                             description = existingBoard.description; createdAt = existingBoard.createdAt;
+                                                             updatedAt = Time.now(); notes = existingBoard.notes; isPrivate = existingBoard.isPrivate;
+                                                             admins = existingBoard.admins; membersWrite = updatedUsers; membersRead = existingBoard.membersRead};
+                                                 boardsById.put(boardId, board);
+                                                 addBoardToUser(existingBoard.id,exsistingUser);
+                                                 #ok();
+                                              };
+                                              case(_) {
+                                                #err(#other("invalid permission requested"));
+                                              };
+                                        };
                                     };
-                                };
-                                case(_) {
-                                   #err(#other("request no found"));
-                                };
+                                    case(_) {
+                                       #err(#other("request no found"));
+                                    };
+                               };
+                           } else {
+                             #ok();
                            };
                         };
                     };
@@ -212,7 +224,7 @@ shared({ caller = initializer }) actor class() {
         };
     };
 
-    public shared({ caller }) func getBoardIdsOfUser(): async Result.Result<[BoardId], CommonError>  {
+    public query({ caller }) func getBoardIdsOfUser(): async Result.Result<[BoardId], CommonError>  {
         let principalName = Principal.toText(caller);
 
         var boardIds = boardsByUsers.get(principalName);
@@ -227,7 +239,7 @@ shared({ caller = initializer }) actor class() {
 
     };
 
-    public shared({ caller }) func getBoard(boardId: BoardId): async Result.Result<Board, CommonError>  {
+    public query({ caller }) func getBoard(boardId: BoardId): async Result.Result<Board, CommonError>  {
         let principalName = Principal.toText(caller);
 
         var board = boardsById.get(boardId);
@@ -272,7 +284,7 @@ shared({ caller = initializer }) actor class() {
         let principalName = Principal.toText(caller);
 
         let board : Board = {id = boardId; name = name;
-            description = description; createdAt = Time.now();
+            description = description; createdAt = Time.now(); icon = null;
             updatedAt = Time.now(); notes = []; isPrivate = isPrivate;
             admins = [principalName]; membersWrite = []; membersRead = []};
 
@@ -315,7 +327,7 @@ shared({ caller = initializer }) actor class() {
 
                      let notes = Array.append<Note>([note], existingBoard.notes);
 
-                     let board : Board = {id = existingBoard.id; name = existingBoard.name;
+                     let board : Board = {id = existingBoard.id; name = existingBoard.name; icon = existingBoard.icon;
                                  description = existingBoard.description; createdAt = existingBoard.createdAt;
                                  updatedAt = Time.now(); notes = notes; isPrivate = existingBoard.isPrivate;
                                  admins = existingBoard.admins; membersWrite = existingBoard.membersWrite; membersRead = existingBoard.membersRead};
@@ -360,7 +372,7 @@ shared({ caller = initializer }) actor class() {
                             note
                         });
 
-                         let board : Board = {id = existingBoard.id; name = existingBoard.name;
+                         let board : Board = {id = existingBoard.id; name = existingBoard.name; icon = existingBoard.icon;
                                      description = existingBoard.description; createdAt = existingBoard.createdAt;
                                      updatedAt = Time.now(); notes = updatedNotes; isPrivate = existingBoard.isPrivate;
                                      admins = existingBoard.admins; membersWrite = existingBoard.membersWrite; membersRead = existingBoard.membersRead};
@@ -375,7 +387,7 @@ shared({ caller = initializer }) actor class() {
            };
     };
 
-    public shared({ caller }) func deleteNoteOfBoard(boardId: BoardId, noteId : Int): async Result.Result<(), CommonError>  {
+    public shared({ caller }) func deleteNoteOfBoard(boardId: BoardId, noteId : Int): async Result.Result<Board, CommonError>  {
         let principalName = Principal.toText(caller);
 
         var board = boardsById.get(boardId);
@@ -390,7 +402,7 @@ shared({ caller = initializer }) actor class() {
                     if(Option.isSome(Array.find<Text>(existingBoard.admins, identity)) or
                         Option.isSome(Array.find<Text>(existingBoard.membersWrite, identity))) {
 
-                         var updatedNotes : [Note] = [];
+                        var updatedNotes : [Note] = [];
 
                         for(note : Note in existingBoard.notes.vals()){
                             if (note.id != noteId) {
@@ -398,13 +410,13 @@ shared({ caller = initializer }) actor class() {
                             };
                         };
 
-                         let board : Board = {id = existingBoard.id; name = existingBoard.name;
+                         let board : Board = {id = existingBoard.id; name = existingBoard.name; icon = existingBoard.icon;
                                      description = existingBoard.description; createdAt = existingBoard.createdAt;
                                      updatedAt = Time.now(); notes = updatedNotes; isPrivate = existingBoard.isPrivate;
                                      admins = existingBoard.admins; membersWrite = existingBoard.membersWrite; membersRead = existingBoard.membersRead};
 
                          boardsById.put(boardId, board);
-                         #ok();
+                         #ok(board);
                     } else {
                         #err(#not_authorized("user not authorized"));
                     };
@@ -507,12 +519,16 @@ shared({ caller = initializer }) actor class() {
         return Principal.toText(caller);
     };
 
-    public func notesCnt() : async Nat {
+    public query({ caller }) func notesCnt() : async Nat {
         return nextNoteId;
     };
 
-    public func userCnt() : async Nat {
+    public query({ caller }) func userCnt() : async Nat {
         return notesByUser.size();
+    };
+
+    public query({ caller }) func boardCnt() : async Nat {
+        return boardsById.size();
     };
 
     system func preupgrade() {
@@ -534,5 +550,8 @@ shared({ caller = initializer }) actor class() {
 
         requestsByBoard := Map.fromIter<BoardId, [BoardAccessRequest]>(stable_requestsByBoard.vals(), 10, Text.equal, Text.hash);
         stable_requestsByBoard := [];
+
+        userNames := Map.fromIter<PrincipalName, Text>(stable_userNames.vals(), 10, Text.equal, Text.hash);
+        stable_userNames := [];
     };
 };

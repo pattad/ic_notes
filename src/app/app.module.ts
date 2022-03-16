@@ -12,6 +12,7 @@ import { NgxEditorModule } from "ngx-editor";
 import { NgxSpinnerModule } from "ngx-spinner";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NewBoardComponent } from './newboard/newboard.component';
+import { ReqAccessComponent } from './req-access/req-access.component';
 
 @NgModule({
     declarations: [
@@ -19,7 +20,8 @@ import { NewBoardComponent } from './newboard/newboard.component';
         AboutComponent,
         HomeComponent,
         EditComponent,
-        NewBoardComponent
+        NewBoardComponent,
+        ReqAccessComponent
     ],
     imports: [
         BrowserModule,

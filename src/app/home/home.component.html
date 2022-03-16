@@ -14,7 +14,7 @@
     <br/>
     <br/>
     <div *ngIf="tags.size > 0" style="text-align: left; float: left">
-        Filter by Tag: <a *ngFor="let tag of tags" (click)="setfilterByTag(tag)">{{'#' + tag}} </a><a
+        Filter by Tag: <a *ngFor="let tag of tags" (click)="setFilterByTag(tag)">{{'#' + tag}} </a><a
             (click)="removeFilter()"> -- remove filter</a>
         <br><br>
     </div>

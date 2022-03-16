@@ -3,7 +3,7 @@ import { IcNotesService } from "../ic-notes.service";
 import { AuthClientWrapper } from "../authClient";
 import { Note } from "../../declarations/notes/notes.did";
 import { isLocalhost } from "../config";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { LocalStorageService } from "../local-storage.service";
 import { NgxSpinnerService } from "ngx-spinner";
 
@@ -37,15 +37,53 @@ export class HomeComponent implements OnInit {
                 private localStorageService: LocalStorageService,
                 private router: Router) {
 
+        let boardId: string = ''
+
+        if (router.url.indexOf('board/') != -1) {
+            boardId = router.url.substr(router.url.indexOf('board/') + 6)
+            console.info(boardId)
+        }
+
+        this.router.events.subscribe(value => {
+            if (this.localStorageService.getActiveBoard() != null) {
+                this.refreshNotesOfBoard()
+            } else {
+                this.getNotes()
+            }
+        });
+
         if (this.isLoggedIn()) {
-            this.getNotes()
+            if (this.localStorageService.getActiveBoard() != null) {
+                this.refreshNotesOfBoard()
+            } else {
+                this.getNotes()
+            }
         } else {
             // try again when auth is initialized
             setTimeout(() => {
                 if (this.isLoggedIn()) {
-                    this.getNotes()
+                    if (boardId.length > 0) {
+                        if (this.localStorageService.getActiveBoard()?.id != boardId) {
+                            if (this.localStorageService.getBoardIds().filter(id => id == boardId).length == 0) {
+                                // user not permitted for board --> request access
+                                this.localStorageService.setActiveBoard(null)
+                                this.router.navigate(['/reqAcc', boardId])
+                            } else {
+                                this.localStorageService.getBoards().forEach(board => {
+                                    if (board.id == boardId) {
+                                        this.localStorageService.setActiveBoard(board)
+                                    }
+                                })
+                            }
+                        }
+                    }
+                    if (this.localStorageService.getActiveBoard() != null) {
+                        this.refreshNotesOfBoard()
+                    } else {
+                        this.getNotes()
+                    }
                 }
-            }, 600);
+            }, 1500);
         }
     }
 
@@ -61,9 +99,20 @@ export class HomeComponent implements OnInit {
                 this.fastUpdate(activeNote)
             }
             this.updateTags()
-            this.setfilterByTag(this.filterByTag)
+            this.setFilterByTag(this.filterByTag)
             this.loaded = true
         })
+    }
+
+    async refreshNotesOfBoard() {
+        this.notes = this.localStorageService.getActiveBoard()?.notes!
+        let activeNote = this.localStorageService.getActiveNote()
+        if (activeNote.id != BigInt(0)) {
+            this.fastUpdate(activeNote)
+        }
+        this.updateTags()
+        this.setFilterByTag(this.filterByTag)
+        this.loaded = true
     }
 
     addNote() {
@@ -90,9 +139,19 @@ export class HomeComponent implements OnInit {
 
         this.filteredNotes = tmpNote.concat(this.notes)
 
-        this.icNotesService.addNote(this.title, content, []).then(res => {
-            this.getNotes()
-        })
+        if (this.localStorageService.getActiveBoard() == null) {
+            this.icNotesService.addNote(this.title, content, []).then(res => {
+                this.getNotes()
+            })
+        } else {
+            this.icNotesService.addNoteToBoard(this.localStorageService.getActiveBoard()!.id, this.title, content, []).then(res => {
+                this.icNotesService.getBoard(this.localStorageService.getActiveBoard()!.id).then(board => {
+                    this.localStorageService.setActiveBoard(board)
+                    this.localStorageService.updateBoards(board)
+                    this.refreshNotesOfBoard()
+                })
+            })
+        }
         this.resetFields();
     }
 
@@ -127,9 +186,16 @@ export class HomeComponent implements OnInit {
         this.notes = this.notes.filter(note => note.id != noteId)
         this.filteredNotes = this.filteredNotes.filter(note => note.id != noteId)
 
-        this.icNotesService.deleteNote(noteId).then(res => {
-            this.getNotes()
-        })
+        if (this.localStorageService.getActiveBoard() == null) {
+            this.icNotesService.deleteNote(noteId).then(res => {
+                this.getNotes()
+            })
+        } else {
+            this.icNotesService.deleteNoteOfBoard(this.localStorageService.getActiveBoard()?.id!, noteId).then(board => {
+                this.localStorageService.setActiveBoard(board)
+                this.localStorageService.updateBoards(board)
+            })
+        }
 
         this.resetFields();
     }
@@ -138,6 +204,7 @@ export class HomeComponent implements OnInit {
         if (isLocalhost) {
             this.authClientWrapper.isLoggedIn = true;
             this.getNotes()
+            this.localStorageService.loadBoards()
         } else {
             this.authClientWrapper.login().then(res => {
                 console.info('identity: ')
@@ -145,6 +212,7 @@ export class HomeComponent implements OnInit {
                 console.info('principal: ' + res?.getPrincipal().toString())
                 if (res) {
                     this.getNotes()
+                    this.localStorageService.loadBoards()
                 }
             });
         }
@@ -173,7 +241,7 @@ export class HomeComponent implements OnInit {
         })
     }
 
-    setfilterByTag(tag: string) {
+    setFilterByTag(tag: string) {
         this.filterByTag = tag
         if (tag.length > 0) {
             this.filteredNotes = this.notes.filter(note => new Set(note.tags).has(tag))
@@ -184,7 +252,7 @@ export class HomeComponent implements OnInit {
     }
 
     removeFilter() {
-        this.setfilterByTag('')
+        this.setFilterByTag('')
     }
 
     public async addNoteFull() {

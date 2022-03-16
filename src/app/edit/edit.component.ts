@@ -65,18 +65,39 @@ export class EditComponent implements OnInit, OnDestroy {
         if (this.note.id != BigInt(0)) {
             this.spinner.show()
             setTimeout(() => {
-                /** spinner ends after 5 seconds */
                 this.spinner.hide();
             }, 800);
-            this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content, this.note.tags)
-            this.router.navigate(['/home'])
+            if (this.localStorageService.getActiveBoard() == null) {
+                this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content, this.note.tags)
+                this.router.navigate(['/home'])
+            } else {
+                this.icNotesService.updateNoteOfBoard(this.localStorageService.getActiveBoard()!.id, this.note.id, this.note.title, this.note.content, []).then(res => {
+                    this.icNotesService.getBoard(this.localStorageService.getActiveBoard()!.id).then(board => {
+                        this.localStorageService.setActiveBoard(board)
+                        this.localStorageService.updateBoards(board)
+                    })
+                })
+                this.router.navigate(['/board', this.localStorageService.getActiveBoard()!.id])
+            }
         } else {
             this.spinner.show();
-            this.icNotesService.addNote(this.note.title, this.note.content, this.note.tags).then(
-                res => {
-                    this.spinner.hide().then(res => this.router.navigate(['/home']))
-                }
-            )
+            if (this.localStorageService.getActiveBoard() == null) {
+                this.icNotesService.addNote(this.note.title, this.note.content, this.note.tags).then(
+                    res => {
+                        this.spinner.hide()
+                        this.router.navigate(['/home'])
+                    }
+                )
+            } else {
+                this.icNotesService.addNoteToBoard(this.localStorageService.getActiveBoard()!.id, this.note.title, this.note.content, []).then(res => {
+                    this.icNotesService.getBoard(this.localStorageService.getActiveBoard()!.id).then(board => {
+                        this.localStorageService.setActiveBoard(board)
+                        this.localStorageService.updateBoards(board)
+                        this.spinner.hide()
+                        this.router.navigate(['/board', this.localStorageService.getActiveBoard()!.id])
+                    })
+                })
+            }
         }
     }
 
@@ -103,7 +124,6 @@ export class EditComponent implements OnInit, OnDestroy {
 
     onTagChange() {
         let tmpTags = this.tags.trim().replace(/#/g, '').replace(/,/g, '').split(' ')
-        console.info(tmpTags)
         let tmpTags2 = ''
         tmpTags.forEach(tag => {
                 if (tag.trim().length > 0) tmpTags2 = tmpTags2 += ' #' + tag.trim();
