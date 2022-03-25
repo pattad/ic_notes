@@ -263,6 +263,35 @@ shared({ caller = initializer }) actor class() {
         };
     };
 
+    public query({ caller }) func getBoards(): async Result.Result<[Board], CommonError>  {
+           let principalName = Principal.toText(caller);
+
+           var boards : [Board] = [];
+
+           var boardIds = boardsByUsers.get(principalName);
+           switch(boardIds){
+               case (null) {
+                       // ignore
+               };
+               case (?existingBoardIds) {
+
+                    for (i in Iter.range(0, existingBoardIds.size() - 1)) {
+
+                        var board = boardsById.get(existingBoardIds[i]);
+                        switch(board) {
+                            case (null) {
+                                // ignore
+                            };
+                            case (?existingBoard) {
+                                boards := Array.append<Board>(boards, [existingBoard]);
+                            };
+                        };
+                    };
+               };
+           };
+           #ok(boards);
+        };
+
     private func addBoardToUser(boardId: BoardId, user: PrincipalName) {
 
         var boardIds = boardsByUsers.get(user);

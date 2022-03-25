@@ -3,7 +3,7 @@ import { IcNotesService } from "../ic-notes.service";
 import { AuthClientWrapper } from "../authClient";
 import { Note } from "../../declarations/notes/notes.did";
 import { isLocalhost } from "../config";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, NavigationStart, Router } from "@angular/router";
 import { LocalStorageService } from "../local-storage.service";
 import { NgxSpinnerService } from "ngx-spinner";
 
@@ -17,6 +17,8 @@ export class HomeComponent implements OnInit {
     content: string = ''
     title: string = ''
     isNewNote: boolean = true
+    boardId: string = ''
+
     id: bigint = BigInt(0)
 
     notes: Note[] = []
@@ -31,68 +33,87 @@ export class HomeComponent implements OnInit {
 
     sortedBy: string = 'updated'
 
+    hasWriteAccess: boolean = true
+
     constructor(private icNotesService: IcNotesService,
                 private authClientWrapper: AuthClientWrapper,
                 private spinner: NgxSpinnerService,
                 private localStorageService: LocalStorageService,
-                private router: Router) {
+                private router: Router,
+                private route: ActivatedRoute) {
 
-        let boardId: string = ''
+        this.boardId = ''
 
         if (router.url.indexOf('board/') != -1) {
-            boardId = router.url.substr(router.url.indexOf('board/') + 6)
-            console.info(boardId)
+            this.boardId = router.url.substr(router.url.indexOf('board/') + 6)
+            console.info(this.boardId)
         }
 
-        this.router.events.subscribe(value => {
-            if (this.localStorageService.getActiveBoard() != null) {
-                this.refreshNotesOfBoard()
-            } else {
-                this.getNotes()
+        this.router.events.subscribe(event => {
+            if (event instanceof NavigationStart) {
+                console.info(event)
+                this.boardId = ''
+                if (event.url.indexOf('board/') != -1) {
+                    this.boardId = event.url.substr(event.url.indexOf('board/') + 6)
+                    console.info(this.boardId)
+                    this.init()
+                }
             }
         });
 
-        if (this.isLoggedIn()) {
+        if (this.authClientWrapper.authClient) {
+            if (this.isLoggedIn()) {
+                this.init()
+            }
+        } else {
+            this.authClientWrapper.create().then(res => {
+                    if (this.isLoggedIn()) {
+                        this.init()
+                    }
+                }
+            )
+        }
+
+    }
+
+    init() {
+        console.info('loading boards...')
+        this.icNotesService.getBoards().then(boards => {
+            this.localStorageService.setBoards(boards)
+            console.info('boardId: ' + this.boardId)
+            if (this.boardId.length > 0) {
+                console.info(boards)
+                for (var board of boards) {
+                    if (board.id == this.boardId) {
+                        console.info('activating board: ' + board.id)
+                        this.localStorageService.setActiveBoard(board)
+                    }
+                }
+                if (this.localStorageService.getActiveBoard()?.id != this.boardId) {
+                    if (this.localStorageService.getBoardIds().filter(id => id == this.boardId).length == 0) {
+                        // user not permitted for board --> request access
+                        this.localStorageService.setActiveBoard(null)
+                        this.router.navigate(['/reqAcc', this.boardId])
+                        return
+                    }
+                }
+            }
+
             if (this.localStorageService.getActiveBoard() != null) {
                 this.refreshNotesOfBoard()
             } else {
                 this.getNotes()
             }
-        } else {
-            // try again when auth is initialized
-            setTimeout(() => {
-                if (this.isLoggedIn()) {
-                    if (boardId.length > 0) {
-                        if (this.localStorageService.getActiveBoard()?.id != boardId) {
-                            if (this.localStorageService.getBoardIds().filter(id => id == boardId).length == 0) {
-                                // user not permitted for board --> request access
-                                this.localStorageService.setActiveBoard(null)
-                                this.router.navigate(['/reqAcc', boardId])
-                            } else {
-                                this.localStorageService.getBoards().forEach(board => {
-                                    if (board.id == boardId) {
-                                        this.localStorageService.setActiveBoard(board)
-                                    }
-                                })
-                            }
-                        }
-                    }
-                    if (this.localStorageService.getActiveBoard() != null) {
-                        this.refreshNotesOfBoard()
-                    } else {
-                        this.getNotes()
-                    }
-                }
-            }, 1500);
-        }
+        })
+
     }
 
     isLoggedIn() {
         return this.authClientWrapper.isLoggedIn;
     }
 
-    async getNotes() {
-        return this.icNotesService.getNotes().then(value => {
+    getNotes() {
+        this.icNotesService.getNotes().then(value => {
             this.notes = value
             let activeNote = this.localStorageService.getActiveNote()
             if (activeNote.id != BigInt(0)) {
@@ -104,7 +125,7 @@ export class HomeComponent implements OnInit {
         })
     }
 
-    async refreshNotesOfBoard() {
+    refreshNotesOfBoard() {
         this.notes = this.localStorageService.getActiveBoard()?.notes!
         let activeNote = this.localStorageService.getActiveNote()
         if (activeNote.id != BigInt(0)) {
@@ -112,6 +133,13 @@ export class HomeComponent implements OnInit {
         }
         this.updateTags()
         this.setFilterByTag(this.filterByTag)
+
+        this.authClientWrapper.getIdentity().then(res => {
+            if (res?.getPrincipal()) {
+                this.hasWriteAccess = this.localStorageService.checkWriteAccess(res!.getPrincipal().toString())
+            }
+        })
+
         this.loaded = true
     }
 
@@ -200,19 +228,17 @@ export class HomeComponent implements OnInit {
         this.resetFields();
     }
 
-    async login() {
+    login() {
         if (isLocalhost) {
             this.authClientWrapper.isLoggedIn = true;
-            this.getNotes()
-            this.localStorageService.loadBoards()
+            this.init()
         } else {
             this.authClientWrapper.login().then(res => {
                 console.info('identity: ')
                 console.info(res)
                 console.info('principal: ' + res?.getPrincipal().toString())
                 if (res) {
-                    this.getNotes()
-                    this.localStorageService.loadBoards()
+                    this.init()
                 }
             });
         }
@@ -225,11 +251,13 @@ export class HomeComponent implements OnInit {
         this.isNewNote = true
     }
 
-    number(number: BigInt): number {
+    number(number: BigInt):
+        number {
         return parseInt(number.toString())
     }
 
-    tagsToString(tags: string[]): string {
+    tagsToString(tags: string[]):
+        string {
         let tagString = ''
         tags.forEach(tag => tagString = tagString += ' #' + tag)
         return tagString

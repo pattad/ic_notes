@@ -1,17 +1,19 @@
 <div class='wrapper'>
-    <div *ngIf="showBanner">
-        <blockquote>Link to this board <b>{{this.getBoardUrl()}}</b>
+    <div *ngIf="showBanner" style="margin-top: 5em">
+        <blockquote>Access link to this board <b>{{this.getBoardUrl()}}</b>
             &nbsp;&nbsp;<button class="button small" (click)="copyToClipboard()">copy</button>
             &nbsp;&nbsp;<button class="button small" (click)="hideBanner()">X</button>
-
         </blockquote>
     </div>
-    <blockquote *ngFor="let req of this.getAccessRequests()">Access Request from User <b>{{req.displayName}}</b>, grant
-        &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'admin')">admin</button>
-        &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'write')">write</button>
-        &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'read')">read only</button>
-        &nbsp;&nbsp;<button class="button small" (click)="declineReq(req.id)">x</button>
-    </blockquote>
+    <div *ngIf="this.getAccessRequests().length > 0" style="margin-top: 5em">
+        <blockquote *ngFor="let req of this.getAccessRequests()">Access Request from User <b>{{req.displayName}}</b>,
+            grant
+            &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'admin')">admin</button>
+            &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'write')">write</button>
+            &nbsp;&nbsp;<button class="button small" (click)="grantReq(req.id, 'read')">read only</button>
+            &nbsp;&nbsp;<button class="button small" (click)="declineReq(req.id)">x</button>
+        </blockquote>
+    </div>
     <header id="header">
         <div class="inner">
 

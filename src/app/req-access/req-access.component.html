@@ -1,10 +1,22 @@
-<h2>Request access to board</h2>
-<p>Get access to the board. Once you have submitted your request, it needs to be approved by a board admin.</p>
+<div *ngIf="isLoggedIn()" class="inner">
 
-Your Display Name <input type="text" [(ngModel)]="name" id="name" style="max-width: 15em"/><br>
+    <h2>Request access to board</h2>
+    <p>Get access to the board. Once you have submitted your request, it needs to be approved by a board admin.</p>
 
-<button (click)="requestAccess()">Request Access</button>&nbsp;
+    Your Display Name <input type="text" [(ngModel)]="name" id="name" style="max-width: 15em"/><br>
 
+    <button (click)="requestAccess()">Request Access</button>&nbsp;
+</div>
+<div *ngIf="!isLoggedIn()" class="inner">
+    <p>Your private notes on the blockchain.</p>
+    <p>A save place to store your personal lists, thoughts, ideas or passphrases and much
+        more....</p>
+    <p>Please login to start writing notes.</p>
+    <button (click)="login()">Login</button>
+    <br>
+    <br>
+
+</div>
 
 <ngx-spinner bdColor="rgba(242, 132, 158, 0.1)" size="medium" type="square-jelly-box" [fullScreen]="true">
     <p> requesting access... </p></ngx-spinner>

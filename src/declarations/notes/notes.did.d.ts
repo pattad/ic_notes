@@ -44,13 +44,15 @@ export interface Note {
 export type PrincipalName = string;
 export type Result = { 'ok' : null } |
   { 'err' : CommonError };
-export type Result_1 = { 'ok' : Array<BoardId> } |
+export type Result_1 = { 'ok' : Array<Board> } |
   { 'err' : CommonError };
-export type Result_2 = { 'ok' : Board } |
+export type Result_2 = { 'ok' : Array<BoardId> } |
   { 'err' : CommonError };
-export type Result_3 = { 'ok' : Array<BoardAccessRequest> } |
+export type Result_3 = { 'ok' : Board } |
   { 'err' : CommonError };
-export type Result_4 = { 'ok' : Note } |
+export type Result_4 = { 'ok' : Array<BoardAccessRequest> } |
+  { 'err' : CommonError };
+export type Result_5 = { 'ok' : Note } |
   { 'err' : CommonError };
 export interface anon_class_16_1 {
   'addNote' : (arg_0: string, arg_1: string, arg_2: Array<string>) => Promise<
@@ -61,19 +63,20 @@ export interface anon_class_16_1 {
       arg_1: string,
       arg_2: string,
       arg_3: Array<string>,
-    ) => Promise<Result_4>,
+    ) => Promise<Result_5>,
   'boardCnt' : () => Promise<bigint>,
   'createBoard' : (
       arg_0: BoardId,
       arg_1: string,
       arg_2: string,
       arg_3: boolean,
-    ) => Promise<Result_2>,
+    ) => Promise<Result_3>,
   'deleteNote' : (arg_0: bigint) => Promise<undefined>,
-  'deleteNoteOfBoard' : (arg_0: BoardId, arg_1: bigint) => Promise<Result_2>,
-  'getAccessRequests' : (arg_0: BoardId) => Promise<Result_3>,
-  'getBoard' : (arg_0: BoardId) => Promise<Result_2>,
-  'getBoardIdsOfUser' : () => Promise<Result_1>,
+  'deleteNoteOfBoard' : (arg_0: BoardId, arg_1: bigint) => Promise<Result_3>,
+  'getAccessRequests' : (arg_0: BoardId) => Promise<Result_4>,
+  'getBoard' : (arg_0: BoardId) => Promise<Result_3>,
+  'getBoardIdsOfUser' : () => Promise<Result_2>,
+  'getBoards' : () => Promise<Result_1>,
   'getNotes' : () => Promise<Array<Note>>,
   'grantAccessRequest' : (
       arg_0: BoardId,

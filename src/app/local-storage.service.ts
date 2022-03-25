@@ -61,9 +61,11 @@ export class LocalStorageService {
 
     public refreshAccessRequests() {
         this.accessRequests = []
-        this.icNotesService.getAccessRequests(this.activeBoard?.id!).then(requests => {
-            this.accessRequests = requests.filter(req => req.status == 'open')
-        });
+        if (this.activeBoard != null) {
+            this.icNotesService.getAccessRequests(this.activeBoard?.id!).then(requests => {
+                this.accessRequests = requests.filter(req => req.status == 'open')
+            });
+        }
     }
 
     public updateBoards(board: Board) {
@@ -74,7 +76,7 @@ export class LocalStorageService {
         }
     }
 
-    public getAccessRequests() : BoardAccessRequest[] {
+    public getAccessRequests(): BoardAccessRequest[] {
         return this.accessRequests
     }
 
@@ -86,14 +88,22 @@ export class LocalStorageService {
         return this.boards
     }
 
-    public async loadBoards() {
-        await this.icNotesService.getBoardIdsOfUser().then(boardIds => {
-            this.boardIds = boardIds
-            let boards: Board[] = []
-            boardIds.forEach(async boardId => {
-                await this.icNotesService.getBoard(boardId).then(board => boards.push(board))
-            })
-            this.boards = boards
-        })
+    public setBoards(boards: Board[]){
+        this.boards = boards
     }
+
+    public checkWriteAccess(principal: string): boolean {
+        if (this.getActiveBoard() != null) {
+            if (this.getActiveBoard()!.membersWrite.filter(userId => userId == principal).length > 0) {
+                return true
+            }
+            if (this.getActiveBoard()!.admins.filter(userId => userId == principal).length > 0) {
+                return true
+            }
+        } else {
+            return true
+        }
+        return false
+    }
+
 }

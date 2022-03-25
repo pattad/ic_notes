@@ -22,14 +22,6 @@ export class AppComponent {
             localStorage.setItem('ic-notes-dark-theme', String(document.body.classList.toggle('dark-theme')))
         }
 
-        this.authClientWrapper.create().then(res => {
-                if (this.isLoggedIn()) {
-                    this.localStorageService.loadBoards()
-                } else {
-                    this.router.navigate(['/home'])
-                }
-            }
-        )
     }
 
     public openDefaultNotes() {
@@ -78,10 +70,6 @@ export class AppComponent {
             console.info('identity: ')
             console.info(res)
             console.info('principal: ' + res?.getPrincipal().toString())
-            if (res) {
-                this.localStorageService.loadBoards()
-                this.router.navigate(['/home'])
-            }
         });
     }
 
@@ -109,7 +97,7 @@ export class AppComponent {
     }
 
     getBoardUrl() {
-        return 'https://' + window.location.host + '/board/' + this.getActiveBoard()?.id
+        return 'https://' + window.location.host + '/reqAcc/' + this.getActiveBoard()?.id
     }
 
     copyToClipboard() {

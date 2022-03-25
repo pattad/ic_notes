@@ -5,6 +5,8 @@ import { IcNotesService } from "../ic-notes.service";
 import { Router } from "@angular/router";
 import { LocalStorageService } from "../local-storage.service";
 import { NgxSpinnerService } from "ngx-spinner";
+import { AuthClientWrapper } from "../authClient";
+import { Location } from '@angular/common'
 
 @Component({
     selector: 'app-edit',
@@ -19,6 +21,8 @@ export class EditComponent implements OnInit, OnDestroy {
 
     editTitle: boolean = false;
     editTags: boolean = false;
+
+    hasWriteAccess: boolean = false;
 
     toolbar: Toolbar = [
         ['bold', 'italic'],
@@ -38,7 +42,9 @@ export class EditComponent implements OnInit, OnDestroy {
     constructor(private icNotesService: IcNotesService,
                 private localStorageService: LocalStorageService,
                 private spinner: NgxSpinnerService,
-                private router: Router) {
+                private authClientWrapper: AuthClientWrapper,
+                private router: Router,
+                private location: Location) {
         this.editor = new Editor()
         this.note = this.localStorageService.getActiveNote()
         this.html = this.note.content
@@ -46,6 +52,13 @@ export class EditComponent implements OnInit, OnDestroy {
         this.title = this.note.title
         this.tags = ''
         this.note.tags.forEach(tag => this.tags = this.tags += ' #' + tag)
+
+        this.authClientWrapper.getIdentity().then(res => {
+            if (res?.getPrincipal()) {
+                this.hasWriteAccess = this.localStorageService.checkWriteAccess(res!.getPrincipal().toString())
+            }
+        })
+
     }
 
     ngOnInit(): void {
@@ -71,7 +84,7 @@ export class EditComponent implements OnInit, OnDestroy {
                 this.icNotesService.updateNote(this.note.id, this.note.title, this.note.content, this.note.tags)
                 this.router.navigate(['/home'])
             } else {
-                this.icNotesService.updateNoteOfBoard(this.localStorageService.getActiveBoard()!.id, this.note.id, this.note.title, this.note.content, []).then(res => {
+                this.icNotesService.updateNoteOfBoard(this.localStorageService.getActiveBoard()!.id, this.note.id, this.note.title, this.note.content, this.note.tags).then(res => {
                     this.icNotesService.getBoard(this.localStorageService.getActiveBoard()!.id).then(board => {
                         this.localStorageService.setActiveBoard(board)
                         this.localStorageService.updateBoards(board)
@@ -140,8 +153,8 @@ export class EditComponent implements OnInit, OnDestroy {
         return this.note.id == BigInt(0)
     }
 
-    navigateToHome() {
-        this.router.navigate(['/home'])
+    navigateBack() {
+        this.location.back()
     }
 
     focusOn(id: string) {

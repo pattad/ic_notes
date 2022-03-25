@@ -1,14 +1,15 @@
 type anon_class_16_1 = 
  service {
    addNote: (text, text, vec text) -> ();
-   addNoteToBoard: (BoardId, text, text, vec text) -> (Result_4);
+   addNoteToBoard: (BoardId, text, text, vec text) -> (Result_5);
    boardCnt: () -> (nat) query;
-   createBoard: (BoardId, text, text, bool) -> (Result_2);
+   createBoard: (BoardId, text, text, bool) -> (Result_3);
    deleteNote: (int) -> ();
-   deleteNoteOfBoard: (BoardId, int) -> (Result_2);
-   getAccessRequests: (BoardId) -> (Result_3) query;
-   getBoard: (BoardId) -> (Result_2) query;
-   getBoardIdsOfUser: () -> (Result_1) query;
+   deleteNoteOfBoard: (BoardId, int) -> (Result_3);
+   getAccessRequests: (BoardId) -> (Result_4) query;
+   getBoard: (BoardId) -> (Result_3) query;
+   getBoardIdsOfUser: () -> (Result_2) query;
+   getBoards: () -> (Result_1) query;
    getNotes: () -> (vec Note) query;
    grantAccessRequest: (BoardId, int, text, text) -> (Result);
    notesCnt: () -> (nat) query;
@@ -18,25 +19,30 @@ type anon_class_16_1 =
    userCnt: () -> (nat) query;
    whoami: () -> (text);
  };
-type Result_4 = 
+type Result_5 = 
  variant {
    err: CommonError;
    ok: Note;
  };
-type Result_3 = 
+type Result_4 = 
  variant {
    err: CommonError;
    ok: vec BoardAccessRequest;
  };
-type Result_2 = 
+type Result_3 = 
  variant {
    err: CommonError;
    ok: Board;
  };
-type Result_1 = 
+type Result_2 = 
  variant {
    err: CommonError;
    ok: vec BoardId;
+ };
+type Result_1 = 
+ variant {
+   err: CommonError;
+   ok: vec Board;
  };
 type Result = 
  variant {

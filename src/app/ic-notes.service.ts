@@ -63,6 +63,17 @@ export class IcNotesService {
         }
     }
 
+    public async getBoards(): Promise<Board[]> {
+        let notes_actor = await this.getActor();
+
+        let res = await notes_actor.getBoards()
+        if ('ok' in res) {
+            return res.ok
+        } else {
+            throw new Error(res.err);
+        }
+    }
+
     public async addNoteToBoard(boardId: string, title: string, content: string, tags: string[]) {
         let notes_actor = await this.getActor();
 

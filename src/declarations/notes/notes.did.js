@@ -21,7 +21,7 @@ export const idlFactory = ({ IDL }) => {
     'other' : IDL.Text,
     'not_authorized' : IDL.Text,
   });
-  const Result_4 = IDL.Variant({ 'ok' : Note, 'err' : CommonError });
+  const Result_5 = IDL.Variant({ 'ok' : Note, 'err' : CommonError });
   const Board = IDL.Record({
     'id' : BoardId,
     'icon' : IDL.Opt(IDL.Vec(IDL.Nat8)),
@@ -35,7 +35,7 @@ export const idlFactory = ({ IDL }) => {
     'membersRead' : IDL.Vec(PrincipalName),
     'membersWrite' : IDL.Vec(PrincipalName),
   });
-  const Result_2 = IDL.Variant({ 'ok' : Board, 'err' : CommonError });
+  const Result_3 = IDL.Variant({ 'ok' : Board, 'err' : CommonError });
   const BoardAccessRequest = IDL.Record({
     'id' : IDL.Int,
     'status' : IDL.Text,
@@ -46,33 +46,35 @@ export const idlFactory = ({ IDL }) => {
     'grantedByUser' : IDL.Opt(PrincipalName),
     'updatedAt' : IDL.Int,
   });
-  const Result_3 = IDL.Variant({
+  const Result_4 = IDL.Variant({
     'ok' : IDL.Vec(BoardAccessRequest),
     'err' : CommonError,
   });
-  const Result_1 = IDL.Variant({
+  const Result_2 = IDL.Variant({
     'ok' : IDL.Vec(BoardId),
     'err' : CommonError,
   });
+  const Result_1 = IDL.Variant({ 'ok' : IDL.Vec(Board), 'err' : CommonError });
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : CommonError });
   const anon_class_16_1 = IDL.Service({
     'addNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(IDL.Text)], [], []),
     'addNoteToBoard' : IDL.Func(
         [BoardId, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
-        [Result_4],
+        [Result_5],
         [],
       ),
     'boardCnt' : IDL.Func([], [IDL.Nat], ['query']),
     'createBoard' : IDL.Func(
         [BoardId, IDL.Text, IDL.Text, IDL.Bool],
-        [Result_2],
+        [Result_3],
         [],
       ),
     'deleteNote' : IDL.Func([IDL.Int], [], []),
-    'deleteNoteOfBoard' : IDL.Func([BoardId, IDL.Int], [Result_2], []),
-    'getAccessRequests' : IDL.Func([BoardId], [Result_3], ['query']),
-    'getBoard' : IDL.Func([BoardId], [Result_2], ['query']),
-    'getBoardIdsOfUser' : IDL.Func([], [Result_1], ['query']),
+    'deleteNoteOfBoard' : IDL.Func([BoardId, IDL.Int], [Result_3], []),
+    'getAccessRequests' : IDL.Func([BoardId], [Result_4], ['query']),
+    'getBoard' : IDL.Func([BoardId], [Result_3], ['query']),
+    'getBoardIdsOfUser' : IDL.Func([], [Result_2], ['query']),
+    'getBoards' : IDL.Func([], [Result_1], ['query']),
     'getNotes' : IDL.Func([], [IDL.Vec(Note)], ['query']),
     'grantAccessRequest' : IDL.Func(
         [BoardId, IDL.Int, IDL.Text, IDL.Text],

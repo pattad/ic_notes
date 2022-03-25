@@ -1,6 +1,6 @@
 <div *ngIf="isLoggedIn()" class="inner">
 
-    <div *ngIf="this.loaded && this.notes.length <= 3">
+    <div *ngIf="this.loaded && this.notes.length <= 3 && hasWriteAccess">
         <p>Your private notes on the blockchain. </p>
 
         <br>
@@ -8,7 +8,7 @@
         <br>
         <button *ngIf="isNewNote" (click)="addNote()">add Note</button>
     </div>
-    <div *ngIf="this.loaded && this.notes.length > 3">
+    <div *ngIf="this.loaded && this.notes.length > 3 && hasWriteAccess">
         <button *ngIf="isNewNote" (click)="addNoteFull()" class="button small">new Note</button>
     </div>
     <br/>
@@ -32,8 +32,10 @@
                  [innerHTML]="note.content"></div>
             <div *ngIf="number(note.createdAt) > 0"
                  style="text-align: left; float: left; ">{{number(note.createdAt) / 1000000 | date: 'shortDate'}} {{tagsToString(note.tags)}}</div>
-            <div style="text-align: right;"><a (click)="editNote(note.id)">edit/open</a> - <a
+            <div *ngIf="hasWriteAccess" style="text-align: right;"><a (click)="editNote(note.id)">open</a> - <a
                     (click)="deleteNote(note.id)">delete</a>
+            </div>
+            <div *ngIf="!hasWriteAccess" style="text-align: right;"><a (click)="editNote(note.id)">open</a>
             </div>
         </div>
     </div>
@@ -46,8 +48,6 @@
     <button (click)="login()">Login</button>
     <br>
     <br>
-    <!--    This is how it looks like:<br>-->
-    <!--    <img src="assets/sample2.png"/>-->
 </div>
 
 <ngx-spinner bdColor="rgba(242, 132, 158, 0.1)" size="medium" type="square-jelly-box" [fullScreen]="true">
