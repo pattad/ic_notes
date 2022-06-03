@@ -1,0 +1,9 @@
+
+
+
+::ng-deep { /* to penetrate <ngx-editor> CSS styling */
+
+  .imgDisplay img {
+    max-width: 100%;
+  }
+}

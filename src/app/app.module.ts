@@ -13,6 +13,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NewBoardComponent } from './newboard/newboard.component';
 import { ReqAccessComponent } from './req-access/req-access.component';
+import { EditImgComponent } from "./editImg/editImg.component";
 
 @NgModule({
     declarations: [
@@ -20,6 +21,7 @@ import { ReqAccessComponent } from './req-access/req-access.component';
         AboutComponent,
         HomeComponent,
         EditComponent,
+        EditImgComponent,
         NewBoardComponent,
         ReqAccessComponent
     ],

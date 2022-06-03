@@ -1,0 +1,36 @@
+<img id="img_large" style="max-width: 100%"><br>
+
+<div *ngIf="isNewNote()">
+    <div *ngIf="showError" style="margin-top: 5em">
+        <blockquote>Even compressed image is larger than 2MB. Please choose a smaller image.
+        </blockquote>
+    </div>
+    <button onClick="document.getElementById('upload').click()">Choose file</button>
+    <input type="file" id="upload" accept=".jpg,.png,.jpeg" (change)="selectFile($event)" hidden>
+    <br><br>
+</div>
+
+<p *ngIf="hasWriteAccess && !editTitle && title.length == 0"><b>{{title}}</b><a (click)="eTitle()"> Add Title</a></p>
+<p *ngIf="hasWriteAccess && !editTitle && title.length > 0"><b>{{title}}</b><a (click)="eTitle()"> edit</a></p>
+<p *ngIf="!hasWriteAccess && title.length > 0"><b>{{title}}</b></p>
+
+<p *ngIf="editTitle">
+    <input type="text" id="title" [(ngModel)]="title" style="max-width: 15em"/>
+</p>
+<p *ngIf="!hasWriteAccess && tags.length > 0">Tag(s): {{tags}}</p>
+<p *ngIf="hasWriteAccess && !editTags && tags.length > 0">Tag(s): {{tags}}<a (click)="eTags()"> edit</a></p>
+<p *ngIf="hasWriteAccess && !editTags && tags.length == 0">{{tags}}<a (click)="eTags()"> Add Tag(s)</a></p>
+<p *ngIf="editTags">
+    Tag(s):
+    <input type="text" id="tags" [(ngModel)]="tags" style="max-width: 15em" (ngModelChange)="onTagChange()"
+           placeholder="#recipe #joke #passphrase"/>
+</p>
+<br>
+
+<p *ngIf="!isNewNote()">Created: {{number(note.createdAt) / 1000000 | date: 'short' }} </p>
+<br>
+<button (click)="navigateBack()">Back</button>&nbsp;
+<button (click)="updateNote()" [disabled]="showError">Safe Image Note</button>
+
+<ngx-spinner bdColor="rgba(242, 132, 158, 0.1)" size="medium" type="square-jelly-box" [fullScreen]="true">
+    <p> saving... </p></ngx-spinner>

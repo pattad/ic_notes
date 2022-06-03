@@ -3,9 +3,11 @@ import { IcNotesService } from "../ic-notes.service";
 import { AuthClientWrapper } from "../authClient";
 import { Note } from "../../declarations/notes/notes.did";
 import { isLocalhost } from "../config";
-import { ActivatedRoute, NavigationStart, Router } from "@angular/router";
+import { NavigationStart, Router } from "@angular/router";
 import { LocalStorageService } from "../local-storage.service";
 import { NgxSpinnerService } from "ngx-spinner";
+import { IcImgTankService } from "../ic-imgTank.service";
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 
 @Component({
     selector: 'app-home',
@@ -40,7 +42,8 @@ export class HomeComponent implements OnInit {
                 private spinner: NgxSpinnerService,
                 private localStorageService: LocalStorageService,
                 private router: Router,
-                private route: ActivatedRoute) {
+                private icImgService: IcImgTankService,
+                private domSanitizer: DomSanitizer) {
 
         this.boardId = ''
 
@@ -73,7 +76,6 @@ export class HomeComponent implements OnInit {
                 }
             )
         }
-
     }
 
     init() {
@@ -121,6 +123,7 @@ export class HomeComponent implements OnInit {
             }
             this.updateTags()
             this.setFilterByTag(this.filterByTag)
+            this.loadImages()
             this.loaded = true
         })
     }
@@ -140,6 +143,7 @@ export class HomeComponent implements OnInit {
             }
         })
 
+        this.loadImages()
         this.loaded = true
     }
 
@@ -206,7 +210,11 @@ export class HomeComponent implements OnInit {
         if (noteId > 0) {
             let activeNote = this.notes.filter(note => note.id == noteId)[0]
             this.localStorageService.setActiveNote(activeNote)
-            this.router.navigate(['/edit'])
+            if (activeNote.content.startsWith('imgid:')) {
+                this.router.navigate(['/editImg'])
+            } else {
+                this.router.navigate(['/edit'])
+            }
         }
     }
 
@@ -242,6 +250,29 @@ export class HomeComponent implements OnInit {
                 }
             });
         }
+    }
+
+    getCachedImage(id: string): SafeUrl | undefined {
+        return this.localStorageService.cachedImages.get(id)
+    }
+
+    loadImages() {
+        this.filteredNotes.forEach(note => {
+            if (note.content.startsWith('imgid:')) {
+                const imgId = note.content.substr(6, 36)
+                if (!this.localStorageService.cachedImages.has(imgId)) {
+                    this.icImgService.getThumbnail(imgId).then(imgArray => {
+                        const safeUrl = this.domSanitizer.bypassSecurityTrustUrl(this.fileToImgSrc(new Uint8Array(imgArray)))
+                        this.localStorageService.cachedImages.set(imgId, safeUrl)
+                    })
+                }
+            }
+        })
+    }
+
+    fileToImgSrc(file: Uint8Array): string {
+        const picBlob = new Blob([file]);
+        return URL.createObjectURL(picBlob);
     }
 
     private resetFields() {
@@ -286,6 +317,11 @@ export class HomeComponent implements OnInit {
     public async addNoteFull() {
         this.localStorageService.setNewNote()
         this.router.navigate(['/edit'])
+    }
+
+    public async addImageNote() {
+        this.localStorageService.setNewNote()
+        this.router.navigate(['/editImg'])
     }
 
     sortBy(attribute: string) {

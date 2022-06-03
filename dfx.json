@@ -4,6 +4,10 @@
       "main": "src/notes/main.mo",
       "type": "motoko"
     },
+    "imgTank": {
+      "main": "src/notes/imgTank.mo",
+      "type": "motoko"
+    },
     "www": {
       "dependencies": [
         "notes"

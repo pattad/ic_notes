@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Board, BoardAccessRequest, Note } from "../declarations/notes/notes.did";
 import { IcNotesService } from "./ic-notes.service";
+import { SafeUrl } from "@angular/platform-browser";
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +15,8 @@ export class LocalStorageService {
     private boards: Board[] = []
 
     private accessRequests: BoardAccessRequest[] = []
+
+    cachedImages: Map<string, SafeUrl> = new Map<string, SafeUrl>()
 
     constructor(private icNotesService: IcNotesService) {
         this.activeNote = this.createNewNote()

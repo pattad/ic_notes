@@ -39,7 +39,8 @@ module.exports = {
   plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
-      NOTES_CANISTER_ID: canisters["notes"]
+      NOTES_CANISTER_ID: canisters["notes"],
+      IMGTANK_CANISTER_ID: canisters["imgTank"]
     }),
     new webpack.ProvidePlugin({
       Buffer: [require.resolve("buffer/"), "Buffer"],

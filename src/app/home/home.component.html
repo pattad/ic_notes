@@ -10,6 +10,8 @@
     </div>
     <div *ngIf="this.loaded && this.notes.length > 3 && hasWriteAccess">
         <button *ngIf="isNewNote" (click)="addNoteFull()" class="button small">new Note</button>
+        <button *ngIf="isNewNote" (click)="addImageNote()" class="button small">new Image</button>
+
     </div>
     <br/>
     <br/>
@@ -25,11 +27,18 @@
     <div *ngIf="notes.length <= 3" style="text-align: right; ">
         <br><br>
     </div>
+
     <div class="card" *ngFor="let note of filteredNotes">
         <div class="container">
             <p><b>{{note.title}}</b><br><br></p>
-            <div style="white-space: pre-wrap; overflow-wrap: break-word; overflow-y: hidden; max-height: 9.5em; margin-bottom: 1em"
+            <div *ngIf="!note.content.startsWith('imgid:')"
+                 style="white-space: pre-wrap; overflow-wrap: break-word; overflow-y: hidden; max-height: 9.5em; margin-bottom: 1em"
                  [innerHTML]="note.content"></div>
+            <div *ngIf="note.content.startsWith('imgid:')"
+                 style="white-space: pre-wrap; overflow-wrap: break-word; overflow-y: hidden; max-height: 9.5em; margin-bottom: 1em">
+                <img [src]="getCachedImage(note.content.substr(6,36))" alt="loading..."/>
+            </div>
+
             <div *ngIf="number(note.createdAt) > 0"
                  style="text-align: left; float: left; ">{{number(note.createdAt) / 1000000 | date: 'shortDate'}} {{tagsToString(note.tags)}}</div>
             <div *ngIf="hasWriteAccess" style="text-align: right;"><a (click)="editNote(note.id)">open</a> - <a

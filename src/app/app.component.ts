@@ -84,6 +84,11 @@ export class AppComponent {
         this.router.navigate(['/edit'])
     }
 
+    public async newImgNote() {
+        this.localStorageService.setNewNote()
+        this.router.navigate(['/editImg'])
+    }
+
     public async newBoard() {
         this.router.navigate(['/newBoard'])
     }
