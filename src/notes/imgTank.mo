@@ -1,6 +1,6 @@
 import Text "mo:base/Text";
 import Nat "mo:base/Nat";
-import Nat32 "mo:base/Nat32";
+import Nat64 "mo:base/Nat64";
 import Iter "mo:base/Iter";
 
 import Blob "mo:base/Blob";
@@ -14,9 +14,9 @@ actor {
 
     type ImgId = Text;
 
-    private stable var _currentMemoryOffset : Nat32  = 2;
-    private stable var _imgOffset : [(ImgId, Nat32)] = [];
-    private var imgOffset : HashMap.HashMap<ImgId, Nat32> = HashMap.fromIter(_imgOffset.vals(), 0, Text.equal, Text.hash);
+    private stable var _currentMemoryOffset : Nat64  = 2;
+    private stable var _imgOffset : [(ImgId, Nat64)] = [];
+    private var imgOffset : HashMap.HashMap<ImgId, Nat64> = HashMap.fromIter(_imgOffset.vals(), 0, Text.equal, Text.hash);
     private stable var _imgSize : [(ImgId, Nat)] = [];
     private var imgSize : HashMap.HashMap<ImgId, Nat> = HashMap.fromIter(_imgSize.vals(), 0, Text.equal, Text.hash);
 
@@ -72,15 +72,15 @@ actor {
     };
 
     private func storeBlobImg(imgId : ImgId, value : Blob)  {
-        var size : Nat = Nat32.toNat(Nat32.fromIntWrap(value.size()));
+        var size : Nat = Nat64.toNat(Nat64.fromIntWrap(value.size()));
         // Each page is 64KiB (65536 bytes)
         var growBy : Nat = size / 65536 + 1;
-        let a = Memory.grow(Nat32.fromNat(growBy));
+        let a = Memory.grow(Nat64.fromNat(growBy));
         Memory.storeBlob(_currentMemoryOffset, value);
         imgOffset.put(imgId, _currentMemoryOffset);
         imgSize.put(imgId, size);
         size := size + 4;
-        _currentMemoryOffset += Nat32.fromNat(size);
+        _currentMemoryOffset += Nat64.fromNat(size);
     };
 
     private func loadBlobImg(imgId : ImgId) : ?Blob {

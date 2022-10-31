@@ -1,0 +1,7 @@
+type ImgId = text;
+service : {
+  getImage: (ImgId) -> (blob) query;
+  getThumbnail: (ImgId) -> (blob) query;
+  uploadImg: (ImgId, blob) -> () oneway;
+  uploadThumbnail: (ImgId, blob) -> () oneway;
+}

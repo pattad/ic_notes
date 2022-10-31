@@ -1,0 +1,52 @@
+// Version: 1.0.0
+type Board =
+  {
+    admins : [PrincipalName];
+    createdAt : Int;
+    description : Text;
+    icon : ?Blob;
+    id : BoardId;
+    isPrivate : Bool;
+    membersRead : [PrincipalName];
+    membersWrite : [PrincipalName];
+    name : Text;
+    notes : [Note];
+    updatedAt : Int
+  };
+type BoardAccessRequest =
+  {
+    boardId : BoardId;
+    createdAt : Int;
+    displayName : Text;
+    grantedByUser : ?PrincipalName;
+    id : Int;
+    status : Text;
+    updatedAt : Int;
+    user : PrincipalName
+  };
+type BoardId = Text;
+type Note =
+  {
+    boardId : Int;
+    content : Text;
+    createdAt : Int;
+    createdBy : PrincipalName;
+    id : Int;
+    isMarked : Bool;
+    isSensitive : Bool;
+    sortOrder : Int;
+    tags : [Text];
+    title : Text;
+    updatedAt : Int;
+    updatedBy : PrincipalName
+  };
+type PrincipalName = Text;
+actor {
+  stable var nextNoteId : Nat;
+  stable var nextRequestId : Nat;
+  stable var stable_boardsById : [(BoardId, Board)];
+  stable var stable_boardsByUsers : [(PrincipalName, [BoardId])];
+  stable var stable_notesByUser : [(PrincipalName, [Note])];
+  stable var stable_requestsByBoard : [(BoardId, [BoardAccessRequest])];
+  stable var stable_userNames : [(PrincipalName, Text)]
+};
