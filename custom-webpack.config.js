@@ -6,7 +6,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 let localCanisters, prodCanisters, canisters;
 
 function initCanisterIds() {
-  
+
   try {
     localCanisters = require(path.resolve(".dfx", "local", "canister_ids.json"));
   } catch (error) {
@@ -26,7 +26,7 @@ function initCanisterIds() {
   canisters = network === "local" ? localCanisters : prodCanisters;
 
   for (const canister in canisters) {
-    process.env[canister.toUpperCase() + "_CANISTER_ID"] =
+    process.env["CANISTER_ID_" + canister.toUpperCase()] =
       canisters[canister][network];
   }
 }
@@ -39,8 +39,8 @@ module.exports = {
   plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
-      NOTES_CANISTER_ID: canisters["notes"],
-      IMGTANK_CANISTER_ID: canisters["imgTank"]
+      CANISTER_ID_NOTES: canisters["notes"],
+      CANISTER_ID_IMGTANK: canisters["imgTank"]
     }),
     new webpack.ProvidePlugin({
       Buffer: [require.resolve("buffer/"), "Buffer"],

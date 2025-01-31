@@ -1,4 +1,4 @@
-type anon_class_16_1 = 
+type _anon_class_16_1 = 
  service {
    addNote: (text, text, vec text) -> ();
    addNoteToBoard: (BoardId, text, text, vec text) -> (Result_5);
@@ -98,4 +98,4 @@ type Board =
    notes: vec Note;
    updatedAt: int;
  };
-service : () -> anon_class_16_1
+service : () -> _anon_class_16_1

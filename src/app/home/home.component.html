@@ -28,7 +28,7 @@
         <br><br>
     </div>
 
-    <div class="card" *ngFor="let note of filteredNotes">
+    <div class="card" *ngFor="let note of filteredNotes" (dblclick)="editNote(note.id)">
         <div class="container">
             <p><b>{{note.title}}</b><br><br></p>
             <div *ngIf="!note.content.startsWith('imgid:')"

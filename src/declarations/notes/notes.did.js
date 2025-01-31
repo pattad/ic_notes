@@ -56,7 +56,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Vec(Board), 'err' : CommonError });
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : CommonError });
-  const anon_class_16_1 = IDL.Service({
+  const _anon_class_16_1 = IDL.Service({
     'addNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(IDL.Text)], [], []),
     'addNoteToBoard' : IDL.Func(
         [BoardId, IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
@@ -96,6 +96,6 @@ export const idlFactory = ({ IDL }) => {
     'userCnt' : IDL.Func([], [IDL.Nat], ['query']),
     'whoami' : IDL.Func([], [IDL.Text], []),
   });
-  return anon_class_16_1;
+  return _anon_class_16_1;
 };
 export const init = ({ IDL }) => { return []; };

@@ -12,7 +12,9 @@ export class AuthClientWrapper {
 
     // Create a new auth client and update it's ready state
     async create() {
-        this.authClient = await AuthClient.create();
+        this.authClient = await AuthClient.create({
+            idleOptions: {idleTimeout: 1000 * 60 * 60 * 48, disableIdle: false}
+        });
         const isAuthenticated = await this.authClient?.isAuthenticated();
         if (isAuthenticated && !this.authClient?.getIdentity().getPrincipal().isAnonymous()) {
             this.isLoggedIn = true

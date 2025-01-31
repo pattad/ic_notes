@@ -1,9 +1,10 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
+import type { IDL } from '@dfinity/candid';
 
 export interface Board {
   'id' : BoardId,
-  'icon' : [] | [Array<number>],
+  'icon' : [] | [Uint8Array | number[]],
   'name' : string,
   'createdAt' : bigint,
   'description' : string,
@@ -56,7 +57,7 @@ export type Result_4 = { 'ok' : Array<BoardAccessRequest> } |
   { 'err' : CommonError };
 export type Result_5 = { 'ok' : Note } |
   { 'err' : CommonError };
-export interface anon_class_16_1 {
+export interface _anon_class_16_1 {
   'addNote' : ActorMethod<[string, string, Array<string>], undefined>,
   'addNoteToBoard' : ActorMethod<
     [BoardId, string, string, Array<string>],
@@ -85,4 +86,6 @@ export interface anon_class_16_1 {
   'userCnt' : ActorMethod<[], bigint>,
   'whoami' : ActorMethod<[], string>,
 }
-export interface _SERVICE extends anon_class_16_1 {}
+export interface _SERVICE extends _anon_class_16_1 {}
+export declare const idlFactory: IDL.InterfaceFactory;
+export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];
